@@ -1,0 +1,4 @@
+model:
+  family: "baseline_placeholder"
+  target: "value"
+  parameters: {}

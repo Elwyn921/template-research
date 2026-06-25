@@ -1,0 +1,2 @@
+experiment_id,date,status,question_or_hypothesis,dataset_id,dataset_version,config_paths,git_commit,seed,method,primary_metric_or_output,artifact_paths,conclusion,next_action
+EXP-YYYYMMDD-001,YYYY-MM-DD,draft,"Replace with a falsifiable question",DS-001,v0.1,"configs/base.yaml;configs/data.yaml",,"20260625",baseline_placeholder,,,"Template record",replace_before_research

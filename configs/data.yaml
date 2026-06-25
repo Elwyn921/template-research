@@ -1,0 +1,10 @@
+data:
+  dataset_id: "DS-001"
+  input_file: "data/sample/demo_input.csv"
+  required_columns:
+    - entity_id
+    - period
+    - value
+  duplicate_key:
+    - entity_id
+    - period

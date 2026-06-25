@@ -1,0 +1,32 @@
+project:
+  slug: research_project
+  title: "Research Project"
+  status: draft
+  owner: ""
+  created: "YYYY-MM-DD"
+
+question:
+  primary: "What decision-relevant research question is this project answering?"
+  secondary: []
+  decision_supported: "What decision, paper claim, or research direction will this support?"
+  out_of_scope: []
+
+scope:
+  unit_of_analysis: "e.g., company-quarter, concrete mix, patient, event-day"
+  target_population: ""
+  temporal_coverage: ""
+  geographic_coverage: ""
+
+reproducibility:
+  random_seed: 20260625
+  data_version_policy: "Every reportable dataset must be in metadata/data_manifest.csv"
+  environment_policy: "Commit pyproject.toml and uv.lock after dependency changes"
+  output_policy: "Outputs are generated, never hand-edited"
+
+quality_gates:
+  required_before_reporting:
+    - "Source registry complete"
+    - "Dataset manifest complete"
+    - "Configuration committed"
+    - "Validation results saved"
+    - "Experiment logged"

@@ -1,0 +1,2 @@
+dataset_id,dataset_name,version,stage,source_ids,storage_path,created_at,rows,columns,hash_sha256,contains_sensitive_data,quality_status,notes
+DS-001,Demo input,v0.1,sample,SRC-001,data/sample/demo_input.csv,YYYY-MM-DD,3,3,,no,template_only,"replace before research"

@@ -1,0 +1,2 @@
+source_id,source_name,source_type,owner_or_publisher,access_url,access_date,license_or_terms,collection_method,scope,known_limitations,citation_or_reference,status
+SRC-001,Demo data,internal_sample,template-research,local,YYYY-MM-DD,shareable,manual,"template only","not for inference","replace before research",active

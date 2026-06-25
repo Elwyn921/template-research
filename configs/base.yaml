@@ -1,0 +1,13 @@
+project:
+  seed: 20260625
+  timezone: "Asia/Singapore"
+paths:
+  raw_data: "data/raw"
+  interim_data: "data/interim"
+  processed_data: "data/processed"
+  outputs: "outputs"
+  metadata: "metadata"
+run:
+  run_id: "local"
+  save_intermediate: true
+  overwrite_outputs: false

@@ -1,0 +1,5 @@
+evaluation:
+  primary_metrics: []
+  robustness_checks:
+    - "schema_validation"
+    - "duplicate_key_check"
