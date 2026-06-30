@@ -1,0 +1,45 @@
+name: advanced_figure
+version: "0.1.0"
+scope: enhancement_pack
+description: "Data, conceptual, mixed, and optional AI-assisted figure capabilities."
+project_types:
+  - empirical_materials
+  - ai_industry
+  - industrial_factor
+  - investment_due_diligence
+  - ai_method_paper
+activation_triggers:
+  - reportable figure generation
+  - conceptual or mixed figure creation
+required_tool_ids:
+  - matplotlib
+  - graphviz
+  - svg
+optional_tool_ids:
+  - seaborn
+  - plotly
+  - altair
+  - shap_plotting
+  - papervizagent
+  - livefigure
+  - autofigure_edit
+  - drawio
+  - inkscape
+required_artifacts:
+  - figure_spec
+required_validators:
+  - validate_figure_assets
+compatibility:
+  requires:
+    - core_research_os
+  compatible_with:
+    - concrete_ml
+    - ai_industry_research
+    - industrial_factor_mining
+    - high_impact_journal
+    - ai_method_paper
+    - investment_due_diligence
+conflicts: []
+export_paths:
+  - packs/advanced_figure
+  - foundation/contracts/figure_contract.md

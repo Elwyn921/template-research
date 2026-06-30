@@ -1,0 +1,47 @@
+name: investment_due_diligence
+version: "0.1.0"
+scope: domain_pack
+description: "Investment thesis, diligence, company evidence, and assumption audit capabilities."
+project_types:
+  - investment_due_diligence
+  - ai_industry
+activation_triggers:
+  - investment memo
+  - company diligence
+  - valuation assumption audit
+required_tool_ids:
+  - tavily_mcp
+  - official_source_verifier
+  - entity_registry_builder
+  - event_ledger_builder
+  - thesis_ledger_builder
+  - comparable_company_builder
+  - valuation_assumption_audit
+  - markdown
+optional_tool_ids:
+  - statsmodels
+  - duckdb
+  - parquet
+  - plotly
+  - quarto
+required_artifacts:
+  - entity_registry
+  - event_ledger
+  - thesis_ledger
+  - investment_memo
+required_validators:
+  - validate_industry_thesis
+  - validate_release
+compatibility:
+  requires:
+    - core_research_os
+  compatible_with:
+    - ai_industry_research
+    - industrial_factor_mining
+    - advanced_figure
+conflicts:
+  - concrete_ml
+  - high_impact_journal
+  - ai_method_paper
+export_paths:
+  - packs/investment_due_diligence

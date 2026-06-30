@@ -46,7 +46,16 @@ def write_brief(tmp_path: Path, brief: dict[str, object]) -> Path:
 
 
 def test_existing_image_brief_passes_hard_gate() -> None:
-    path = ROOT / "reports" / "paper" / "figures" / "briefs" / "example_concrete_ai_workflow.yaml"
+    path = (
+        ROOT
+        / "examples"
+        / "research_os_project"
+        / "reports"
+        / "paper"
+        / "figures"
+        / "briefs"
+        / "example_concrete_ai_workflow.yaml"
+    )
     assert validate_brief(path) == []
 
 

@@ -1,0 +1,28 @@
+adapter_id: zotero
+tool_id: zotero
+status: optional
+supported_packs:
+  - core_research_os
+  - high_impact_journal
+activation_conditions:
+  - local citation library is maintained
+inputs:
+  - DOI, URL, PDF, or bibliographic metadata
+outputs:
+  - citation records
+  - bibliography exports
+read_permissions:
+  - user Zotero library
+write_permissions:
+  - exported bibliography only
+network_requirements:
+  - optional metadata lookup
+credential_requirements: []
+installation_steps:
+  - Install Zotero outside the repository.
+fallbacks:
+  - zotero_mcp
+overlap_warnings:
+  - Do not commit local Zotero databases or restricted PDFs.
+security_notes:
+  - Keep private libraries and licensed PDFs outside Git.

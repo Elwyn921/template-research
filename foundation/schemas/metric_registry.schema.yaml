@@ -1,0 +1,9 @@
+schema_id: metric_registry
+required_fields:
+  - metric_id
+  - metric_name
+  - definition
+  - unit
+  - source_id
+  - transformation
+  - caveats

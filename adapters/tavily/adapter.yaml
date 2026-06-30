@@ -1,0 +1,30 @@
+adapter_id: tavily
+tool_id: tavily_mcp
+status: optional
+supported_packs:
+  - ai_industry_research
+  - investment_due_diligence
+activation_conditions:
+  - current web or industry evidence is needed
+inputs:
+  - query
+  - source priority
+outputs:
+  - source candidates
+  - evidence notes
+read_permissions:
+  - public web
+write_permissions:
+  - source registry and event ledger drafts
+network_requirements:
+  - required Tavily MCP access
+credential_requirements:
+  - TAVILY_API_KEY
+installation_steps:
+  - Configure Tavily MCP outside the repository.
+fallbacks:
+  - official_source_verifier
+overlap_warnings:
+  - Prefer official primary sources before news or commentary.
+security_notes:
+  - Never commit API keys or provider configs.

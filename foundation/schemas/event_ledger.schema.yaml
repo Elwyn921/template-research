@@ -1,0 +1,11 @@
+schema_id: event_ledger
+required_fields:
+  - event_id
+  - entity_id
+  - event_date
+  - disclosure_date
+  - as_of_date
+  - source_id
+  - source_tier
+  - confidence
+  - event_summary

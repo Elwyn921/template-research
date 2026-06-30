@@ -1,0 +1,146 @@
+schema_version: "1.0"
+purpose: "Canonical compatibility source for packs, profiles, and major tool overlaps."
+
+pack_compatibility:
+  core_research_os:
+    compatible_with:
+      - concrete_ml
+      - ai_industry_research
+      - industrial_factor_mining
+      - advanced_figure
+      - high_impact_journal
+      - ai_method_paper
+      - investment_due_diligence
+    conflicts_with: []
+  concrete_ml:
+    compatible_with:
+      - core_research_os
+      - advanced_figure
+      - high_impact_journal
+      - ai_method_paper
+    conflicts_with:
+      - investment_due_diligence
+  ai_industry_research:
+    compatible_with:
+      - core_research_os
+      - industrial_factor_mining
+      - advanced_figure
+      - investment_due_diligence
+    conflicts_with: []
+  industrial_factor_mining:
+    compatible_with:
+      - core_research_os
+      - ai_industry_research
+      - advanced_figure
+      - investment_due_diligence
+    conflicts_with: []
+  advanced_figure:
+    compatible_with:
+      - core_research_os
+      - concrete_ml
+      - ai_industry_research
+      - industrial_factor_mining
+      - high_impact_journal
+      - ai_method_paper
+      - investment_due_diligence
+    conflicts_with: []
+  high_impact_journal:
+    compatible_with:
+      - core_research_os
+      - concrete_ml
+      - advanced_figure
+      - ai_method_paper
+    conflicts_with:
+      - investment_due_diligence
+  ai_method_paper:
+    compatible_with:
+      - core_research_os
+      - concrete_ml
+      - advanced_figure
+      - high_impact_journal
+    conflicts_with:
+      - investment_due_diligence
+  investment_due_diligence:
+    compatible_with:
+      - core_research_os
+      - ai_industry_research
+      - industrial_factor_mining
+      - advanced_figure
+    conflicts_with:
+      - concrete_ml
+      - high_impact_journal
+      - ai_method_paper
+
+tool_overlap_groups:
+  literature_discovery:
+    primary_default: paper_search_mcp
+    overlaps:
+      - openalex_adapter
+      - crossref_adapter
+      - semantic_scholar_adapter
+    rule: "Use one primary discovery route, then metadata fallbacks only when needed."
+  dataframe_engine:
+    primary_default: pandas
+    overlaps:
+      - polars
+      - duckdb
+    rule: "Use pandas first; activate Polars or DuckDB only for scale or SQL needs."
+  experiment_tracking:
+    primary_default: experiment_registry_csv
+    overlaps:
+      - mlflow
+      - dvc
+    rule: "Do not activate MLflow or DVC unless explicit trigger conditions are met."
+  static_plotting:
+    primary_default: matplotlib
+    overlaps:
+      - seaborn
+      - shap_plotting
+    rule: "Matplotlib is default; SHAP plotting only when SHAP outputs exist."
+  ai_illustration:
+    primary_default: svg
+    overlaps:
+      - papervizagent
+      - livefigure
+      - autofigure_edit
+    rule: "AI illustration is draft-only and cannot produce exact quantitative marks."
+
+project_type_defaults:
+  empirical_materials:
+    base_profile: base_research
+    domain_profiles:
+      - concrete_ml
+      - ai_method_paper
+    enhancement_profiles:
+      - advanced_figure
+      - high_impact_journal
+  ai_industry:
+    base_profile: base_research
+    domain_profiles:
+      - ai_industry_research
+      - industrial_factor_mining
+      - investment_due_diligence
+    enhancement_profiles:
+      - advanced_figure
+  industrial_factor:
+    base_profile: base_research
+    domain_profiles:
+      - industrial_factor_mining
+      - ai_industry_research
+    enhancement_profiles:
+      - advanced_figure
+  investment_due_diligence:
+    base_profile: base_research
+    domain_profiles:
+      - investment_due_diligence
+      - ai_industry_research
+    enhancement_profiles:
+      - advanced_figure
+  ai_method_paper:
+    base_profile: base_research
+    domain_profiles:
+      - ai_method_paper
+      - concrete_ml
+    enhancement_profiles:
+      - advanced_figure
+      - high_impact_journal

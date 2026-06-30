@@ -1,0 +1,31 @@
+adapter_id: paperqa2
+tool_id: paperqa2
+status: optional
+supported_packs:
+  - core_research_os
+  - ai_method_paper
+  - high_impact_journal
+activation_conditions:
+  - corpus size >= 20 PDFs or page-level evidence tracing is required
+inputs:
+  - declared PDF corpus
+  - research question
+outputs:
+  - claim-to-source traces
+  - contradiction notes
+read_permissions:
+  - declared PDF corpus
+write_permissions:
+  - evidence trace outputs
+network_requirements:
+  - optional model provider access
+credential_requirements:
+  - provider-specific credentials when used
+installation_steps:
+  - Install PaperQA2 explicitly after trigger conditions are met.
+fallbacks:
+  - literature_survey_skill
+overlap_warnings:
+  - Do not use for ordinary small-corpus synthesis.
+security_notes:
+  - Do not commit restricted PDFs or provider credentials.

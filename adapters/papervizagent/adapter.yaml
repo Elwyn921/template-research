@@ -1,0 +1,30 @@
+adapter_id: papervizagent
+tool_id: papervizagent
+status: experimental
+supported_packs:
+  - advanced_figure
+activation_conditions:
+  - conceptual or mixed figure needs multi-candidate AI illustration
+inputs:
+  - constrained PaperVizAgent input JSON
+  - figure brief
+outputs:
+  - draft image candidates
+  - critique notes
+read_permissions:
+  - constrained figure input
+write_permissions:
+  - draft figure outputs
+network_requirements:
+  - optional model provider access
+credential_requirements:
+  - provider-specific credentials when used
+installation_steps:
+  - Keep PaperVizAgent as an external checkout or skill.
+fallbacks:
+  - svg
+  - graphviz
+overlap_warnings:
+  - Never use for mode: plot or exact quantitative marks.
+security_notes:
+  - Do not commit provider configs or API keys.

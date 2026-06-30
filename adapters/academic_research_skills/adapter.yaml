@@ -1,0 +1,30 @@
+adapter_id: academic_research_skills
+tool_id: academic_research_skills
+status: optional
+supported_packs:
+  - core_research_os
+  - high_impact_journal
+  - ai_method_paper
+activation_conditions:
+  - review, logic, or revision planning is needed
+inputs:
+  - draft artifacts
+  - evidence matrix
+outputs:
+  - review notes
+  - revision checklist
+read_permissions:
+  - draft artifacts
+write_permissions:
+  - review notes
+network_requirements: []
+credential_requirements: []
+installation_steps:
+  - Enable selected skills explicitly.
+fallbacks:
+  - citation_check_skill
+  - refchecker
+overlap_warnings:
+  - Review aids do not certify scientific truth.
+security_notes:
+  - Do not expose private data to external skills without project approval.

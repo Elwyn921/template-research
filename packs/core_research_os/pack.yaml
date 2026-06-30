@@ -1,0 +1,52 @@
+name: core_research_os
+version: "0.1.0"
+scope: reusable_foundation
+description: "Base ResearchOS contracts, schemas, templates, and validators."
+project_types:
+  - empirical_materials
+  - ai_industry
+  - industrial_factor
+  - investment_due_diligence
+  - ai_method_paper
+activation_triggers:
+  - any ResearchOS export
+required_tool_ids:
+  - python
+  - pandas
+  - evidence_matrix_builder
+  - markdown
+optional_tool_ids:
+  - zotero
+  - zotero_mcp
+  - paper_search_mcp
+  - quarto
+required_artifacts:
+  - evidence_matrix
+  - dataset_inventory
+  - claim_graph
+  - run_manifest
+  - result_ledger
+  - figure_spec
+required_validators:
+  - validate_evidence
+  - validate_dataset_inventory
+  - validate_claim_graph
+  - validate_figure_assets
+  - validate_release
+compatibility:
+  requires: []
+  compatible_with:
+    - concrete_ml
+    - ai_industry_research
+    - industrial_factor_mining
+    - advanced_figure
+    - high_impact_journal
+    - ai_method_paper
+    - investment_due_diligence
+conflicts: []
+export_paths:
+  - packs/core_research_os
+  - foundation/contracts
+  - foundation/schemas
+  - foundation/templates
+  - foundation/validators

@@ -1,0 +1,12 @@
+schema_id: evidence_matrix
+required_fields:
+  - evidence_id
+  - source_id
+  - claim_id
+  - evidence_type
+  - support_direction
+  - confidence
+  - notes
+field_notes:
+  support_direction: "supporting, contradicting, mixed, or background"
+  confidence: "low, medium, or high"

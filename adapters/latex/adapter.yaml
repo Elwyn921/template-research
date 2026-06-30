@@ -1,0 +1,29 @@
+adapter_id: latex
+tool_id: latex
+status: optional
+supported_packs:
+  - high_impact_journal
+  - ai_method_paper
+activation_conditions:
+  - final typesetting requires LaTeX
+inputs:
+  - tex source
+  - bibliography
+  - figures
+outputs:
+  - PDF
+read_permissions:
+  - manuscript source
+write_permissions:
+  - build outputs
+network_requirements: []
+credential_requirements: []
+installation_steps:
+  - Install a TeX distribution explicitly when needed.
+fallbacks:
+  - quarto
+  - markdown
+overlap_warnings:
+  - Do not require LaTeX for early reports.
+security_notes:
+  - Review generated auxiliary files before release.

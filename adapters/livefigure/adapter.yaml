@@ -1,0 +1,28 @@
+adapter_id: livefigure
+tool_id: livefigure
+status: experimental
+supported_packs:
+  - advanced_figure
+activation_conditions:
+  - advanced illustration support is explicitly selected
+inputs:
+  - figure brief
+outputs:
+  - draft illustration assets
+read_permissions:
+  - figure brief
+write_permissions:
+  - draft figure outputs
+network_requirements:
+  - optional provider access
+credential_requirements:
+  - provider-specific credentials when used
+installation_steps:
+  - Install externally only after explicit selection.
+fallbacks:
+  - papervizagent
+  - svg
+overlap_warnings:
+  - Use editable final assets for publication.
+security_notes:
+  - Do not commit provider configs.

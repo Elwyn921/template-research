@@ -1,0 +1,8 @@
+schema_id: claim_graph
+required_fields:
+  - claim_id
+  - claim_text
+  - claim_type
+  - depends_on
+  - evidence_ids
+  - status

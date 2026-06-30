@@ -1,0 +1,29 @@
+adapter_id: citation_check
+tool_id: citation_check_skill
+status: optional
+supported_packs:
+  - core_research_os
+  - high_impact_journal
+activation_conditions:
+  - citation existence or metadata checking is needed
+inputs:
+  - bibliography
+  - manuscript citations
+outputs:
+  - citation QA report
+read_permissions:
+  - bibliography
+write_permissions:
+  - citation QA report
+network_requirements:
+  - optional metadata lookup
+credential_requirements: []
+installation_steps:
+  - Enable explicitly before release or submission checks.
+fallbacks:
+  - crossref_adapter
+  - refchecker
+overlap_warnings:
+  - Metadata checks do not validate claims.
+security_notes:
+  - Do not upload restricted manuscript content without approval.

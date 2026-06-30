@@ -1,0 +1,44 @@
+name: concrete_ml
+version: "0.1.0"
+scope: domain_pack
+description: "Concrete/materials ML diagnostics, XAI, experiment, and figure capabilities."
+project_types:
+  - empirical_materials
+  - ai_method_paper
+activation_triggers:
+  - concrete/materials prediction
+  - model diagnostics or XAI
+required_tool_ids:
+  - pandas
+  - scikit_learn
+  - statsmodels
+  - scipy
+  - shap
+  - matplotlib
+optional_tool_ids:
+  - mlflow
+  - dvc
+  - optuna
+  - shap_plotting
+  - duckdb
+  - parquet
+required_artifacts:
+  - experiment_plan
+  - run_manifest
+  - result_ledger
+  - figure_spec
+required_validators:
+  - validate_experiment_plan
+  - validate_run_manifest
+  - validate_figure_assets
+compatibility:
+  requires:
+    - core_research_os
+  compatible_with:
+    - advanced_figure
+    - high_impact_journal
+    - ai_method_paper
+conflicts:
+  - investment_due_diligence
+export_paths:
+  - packs/concrete_ml

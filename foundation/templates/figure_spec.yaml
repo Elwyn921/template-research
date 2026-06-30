@@ -1,0 +1,11 @@
+figure_id: FIG-001
+mode: data
+claim_id: ""
+source_paths: []
+renderer: matplotlib
+output_paths:
+  png: ""
+  svg: ""
+  pdf: ""
+caption: ""
+verification_notes: []

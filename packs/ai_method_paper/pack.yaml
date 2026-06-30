@@ -1,0 +1,47 @@
+name: ai_method_paper
+version: "0.1.0"
+scope: domain_pack
+description: "AI method experiment, evidence, manuscript, and release capabilities."
+project_types:
+  - ai_method_paper
+  - empirical_materials
+activation_triggers:
+  - AI method development or evaluation
+required_tool_ids:
+  - scikit_learn
+  - statsmodels
+  - scipy
+  - matplotlib
+  - paperspine
+  - academic_research_skills
+optional_tool_ids:
+  - paperqa2
+  - mlflow
+  - dvc
+  - optuna
+  - latex
+  - quarto
+  - nature_paper_skills
+required_artifacts:
+  - experiment_plan
+  - run_manifest
+  - result_ledger
+  - claim_graph
+  - figure_spec
+required_validators:
+  - validate_experiment_plan
+  - validate_run_manifest
+  - validate_claim_graph
+  - validate_figure_assets
+  - validate_release
+compatibility:
+  requires:
+    - core_research_os
+  compatible_with:
+    - concrete_ml
+    - advanced_figure
+    - high_impact_journal
+conflicts:
+  - investment_due_diligence
+export_paths:
+  - packs/ai_method_paper

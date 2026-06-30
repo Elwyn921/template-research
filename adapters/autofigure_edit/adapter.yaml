@@ -1,0 +1,29 @@
+adapter_id: autofigure_edit
+tool_id: autofigure_edit
+status: experimental
+supported_packs:
+  - advanced_figure
+activation_conditions:
+  - existing conceptual figure needs assisted editing
+inputs:
+  - figure source
+  - revision instruction
+outputs:
+  - edited draft output
+read_permissions:
+  - figure source
+write_permissions:
+  - edited draft outputs
+network_requirements:
+  - optional provider access
+credential_requirements:
+  - provider-specific credentials when used
+installation_steps:
+  - Install externally only after explicit selection.
+fallbacks:
+  - svg
+  - inkscape
+overlap_warnings:
+  - Do not redraw quantitative data panels.
+security_notes:
+  - Do not commit provider configs.

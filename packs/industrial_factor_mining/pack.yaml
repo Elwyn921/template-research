@@ -1,0 +1,44 @@
+name: industrial_factor_mining
+version: "0.1.0"
+scope: domain_pack
+description: "Industrial factor construction, leakage control, validation, and robustness capabilities."
+project_types:
+  - industrial_factor
+  - ai_industry
+  - investment_due_diligence
+activation_triggers:
+  - factor construction
+  - rolling statistics
+  - leakage controls
+required_tool_ids:
+  - pandas
+  - duckdb
+  - parquet
+  - statsmodels
+  - scipy
+  - matplotlib
+optional_tool_ids:
+  - scikit_learn
+  - mlflow
+  - dvc
+  - optuna
+  - tavily_mcp
+required_artifacts:
+  - metric_registry
+  - run_manifest
+  - result_ledger
+  - figure_spec
+required_validators:
+  - validate_run_manifest
+  - validate_figure_assets
+  - validate_release
+compatibility:
+  requires:
+    - core_research_os
+  compatible_with:
+    - ai_industry_research
+    - investment_due_diligence
+    - advanced_figure
+conflicts: []
+export_paths:
+  - packs/industrial_factor_mining

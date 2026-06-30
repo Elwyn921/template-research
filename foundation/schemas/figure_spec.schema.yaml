@@ -1,0 +1,14 @@
+schema_id: figure_spec
+required_fields:
+  - figure_id
+  - mode
+  - claim_id
+  - source_paths
+  - renderer
+  - output_paths
+  - caption
+  - verification_notes
+allowed_modes:
+  - data
+  - conceptual
+  - mixed

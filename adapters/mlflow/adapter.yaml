@@ -1,0 +1,28 @@
+adapter_id: mlflow
+tool_id: mlflow
+status: optional
+supported_packs:
+  - concrete_ml
+  - ai_method_paper
+activation_conditions:
+  - multiple model runs or parameter comparisons require tracing
+inputs:
+  - parameters
+  - metrics
+  - artifacts
+outputs:
+  - local experiment records
+read_permissions:
+  - experiment artifacts
+write_permissions:
+  - local MLflow directory
+network_requirements: []
+credential_requirements: []
+installation_steps:
+  - Install MLflow only after trigger conditions are met.
+fallbacks:
+  - experiment_registry_csv
+overlap_warnings:
+  - Do not run an always-on MLflow server by default.
+security_notes:
+  - Keep local tracking state out of unrelated exports.

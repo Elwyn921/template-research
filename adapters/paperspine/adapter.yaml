@@ -1,0 +1,28 @@
+adapter_id: paperspine
+tool_id: paperspine
+status: optional
+supported_packs:
+  - high_impact_journal
+  - ai_method_paper
+activation_conditions:
+  - manuscript argument architecture is needed
+inputs:
+  - claim graph
+  - evidence matrix
+outputs:
+  - manuscript spine
+  - argument outline
+read_permissions:
+  - claim graph and evidence matrix
+write_permissions:
+  - manuscript spine notes
+network_requirements: []
+credential_requirements: []
+installation_steps:
+  - Install or enable explicitly when needed.
+fallbacks:
+  - markdown
+overlap_warnings:
+  - Structures arguments; does not decide conclusions.
+security_notes:
+  - Keep project-specific claims in downstream project files.

@@ -12,11 +12,12 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_ROOT_FILES = [
     "AGENTS.md",
-    "RESEARCH.md",
-    "TOOL_MODULES.md",
-    "TOOLCHAIN.md",
-    "PROJECT_BRIEF.yaml",
-    "FIGURE_GENERATION_CONTRACT.md",
+    "README.md",
+    "FOUNDATIONS.md",
+    "foundation/contracts/research_integrity.md",
+    "foundation/contracts/figure_contract.md",
+    "tool_fabric/TOOL_FABRIC.md",
+    "tool_fabric/registry/tools.yaml",
 ]
 
 
@@ -176,12 +177,12 @@ def build_content(
     brief: dict[str, Any],
     brief_path: Path,
     agents: str,
-    project_brief: str,
-    research: str,
-    tool_modules: str,
-    toolchain: str,
+    readme: str,
+    foundations: str,
+    research_integrity: str,
+    tool_fabric: str,
     figure_contract: str,
-    research_stack: str,
+    tools_registry_excerpt: str,
 ) -> str:
     panels = format_panels(as_list(brief.get("panels")))
     must_keep = bullet_list(as_list(brief.get("must_keep_labels")))
@@ -198,26 +199,26 @@ tool routing, labels, and verification steps. If a requested visual element is
 not supported by the repository context or figure brief, keep it out of the
 figure or mark the result as a draft for review.
 
-Source: RESEARCH.md
-{research}
-
 Source: AGENTS.md
 {agents}
 
-Source: PROJECT_BRIEF.yaml
-{project_brief}
+Source: README.md
+{readme}
 
-Source: TOOL_MODULES.md
-{tool_modules}
+Source: FOUNDATIONS.md
+{foundations}
 
-Source: TOOLCHAIN.md
-{toolchain}
+Source: foundation/contracts/research_integrity.md
+{research_integrity}
 
-Source: FIGURE_GENERATION_CONTRACT.md
+Source: foundation/contracts/figure_contract.md
 {figure_contract}
 
-Source: docs/RESEARCH_STACK.md
-{research_stack}
+Source: tool_fabric/TOOL_FABRIC.md
+{tool_fabric}
+
+Source: tool_fabric/registry/tools.yaml excerpt
+{tools_registry_excerpt}
 
 ACTIVE FIGURE BRIEF
 Source: {brief_path.as_posix()}
@@ -275,8 +276,8 @@ def build_visual_intent(brief: dict[str, Any]) -> str:
     return (
         f"{brief.get('caption') or brief.get('figure_goal')}\n\n"
         f"Figure role: {figure_role}. "
-        "Agent guidance: follow AGENTS.md, TOOL_MODULES.md, RESEARCH.md, "
-        "TOOLCHAIN.md, docs/RESEARCH_STACK.md, and FIGURE_GENERATION_CONTRACT.md; "
+        "Agent guidance: follow AGENTS.md, FOUNDATIONS.md, "
+        "foundation/contracts/figure_contract.md, and tool_fabric/registry/tools.yaml; "
         f"preserve these labels exactly: {labels or 'none specified'}; "
         f"avoid: {forbidden or 'none specified'}; "
         "do not invent numerical results or unsupported scientific/financial claims."
@@ -309,7 +310,7 @@ def build_records(
                 "additional_info": {
                     "rounded_ratio": aspect_ratio,
                     "source_files": source_files,
-                    "contract": "FIGURE_GENERATION_CONTRACT.md",
+                    "contract": "foundation/contracts/figure_contract.md",
                     "compiled_at_utc": datetime.now(UTC).isoformat(),
                 },
             }
@@ -341,22 +342,22 @@ def main() -> int:
     require_paperviz_compatible_mode(brief, brief_path)
 
     agents = read_text(ROOT / "AGENTS.md")
-    research = read_text(ROOT / "RESEARCH.md")
-    tool_modules = read_text(ROOT / "TOOL_MODULES.md")
-    toolchain = read_text(ROOT / "TOOLCHAIN.md")
-    project_brief = read_text(ROOT / "PROJECT_BRIEF.yaml")
-    figure_contract = read_text(ROOT / "FIGURE_GENERATION_CONTRACT.md")
-    research_stack_path = ROOT / "docs" / "RESEARCH_STACK.md"
-    research_stack = read_text(research_stack_path) if research_stack_path.exists() else ""
+    readme = read_text(ROOT / "README.md")
+    foundations = read_text(ROOT / "FOUNDATIONS.md")
+    research_integrity = read_text(ROOT / "foundation" / "contracts" / "research_integrity.md")
+    figure_contract = read_text(ROOT / "foundation" / "contracts" / "figure_contract.md")
+    tool_fabric = read_text(ROOT / "tool_fabric" / "TOOL_FABRIC.md")
+    tools_registry = read_text(ROOT / "tool_fabric" / "registry" / "tools.yaml")
+    tools_registry_excerpt = tools_registry[:8000]
 
     source_files = [
         "AGENTS.md",
-        "RESEARCH.md",
-        "TOOL_MODULES.md",
-        "TOOLCHAIN.md",
-        "PROJECT_BRIEF.yaml",
-        "FIGURE_GENERATION_CONTRACT.md",
-        "docs/RESEARCH_STACK.md",
+        "README.md",
+        "FOUNDATIONS.md",
+        "foundation/contracts/research_integrity.md",
+        "foundation/contracts/figure_contract.md",
+        "tool_fabric/TOOL_FABRIC.md",
+        "tool_fabric/registry/tools.yaml",
         brief_path.relative_to(ROOT).as_posix(),
     ]
     for root_file in REQUIRED_ROOT_FILES:
@@ -367,12 +368,12 @@ def main() -> int:
         brief=brief,
         brief_path=brief_path.relative_to(ROOT),
         agents=agents,
-        project_brief=project_brief,
-        research=research,
-        tool_modules=tool_modules,
-        toolchain=toolchain,
+        readme=readme,
+        foundations=foundations,
+        research_integrity=research_integrity,
+        tool_fabric=tool_fabric,
         figure_contract=figure_contract,
-        research_stack=research_stack,
+        tools_registry_excerpt=tools_registry_excerpt,
     )
     records = build_records(
         brief=brief,
@@ -385,7 +386,15 @@ def main() -> int:
     if args.out:
         out_path = args.out if args.out.is_absolute() else ROOT / args.out
     else:
-        out_dir = ROOT / "outputs" / "figures" / "papervizagent" / slugify(brief_path.stem)
+        out_dir = (
+            ROOT
+            / "examples"
+            / "research_os_project"
+            / "outputs"
+            / "figures"
+            / "papervizagent"
+            / slugify(brief_path.stem)
+        )
         out_path = out_dir / "input.json"
 
     out_path.parent.mkdir(parents=True, exist_ok=True)

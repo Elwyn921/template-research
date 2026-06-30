@@ -21,5 +21,9 @@ jobs:
         run: uv run ruff format --check .
       - name: Test
         run: uv run pytest
-      - name: Registry audit
-        run: uv run python scripts/audit_registry.py
+      - name: Foundry validation
+        run: uv run python scripts/validate_foundry.py
+      - name: Pack validation
+        run: uv run python scripts/validate_pack.py
+      - name: Tool plan smoke test
+        run: uv run python tool_fabric/resolvers/resolve_tool_plan.py --project-type empirical_materials --task "test domain shift and local calibration" --stage experiment --target-output "reproducible result and figure" --profiles concrete_ml,advanced_figure

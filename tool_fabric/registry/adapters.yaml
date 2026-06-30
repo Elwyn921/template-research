@@ -1,0 +1,243 @@
+schema_version: "1.0"
+purpose: "Canonical adapter registry."
+
+adapters:
+  zotero:
+    adapter_id: zotero
+    tool_id: zotero
+    status: optional
+    path: adapters/zotero
+    supported_packs:
+      - core_research_os
+      - high_impact_journal
+    activation_conditions:
+      - local citation library is maintained
+    read_permissions:
+      - user Zotero library
+    write_permissions:
+      - exported bibliography only
+
+  paper_search:
+    adapter_id: paper_search
+    tool_id: paper_search_mcp
+    status: optional
+    path: adapters/paper_search
+    supported_packs:
+      - core_research_os
+      - ai_method_paper
+    activation_conditions:
+      - external academic discovery is needed
+    read_permissions:
+      - network academic metadata
+    write_permissions:
+      - source candidate notes
+
+  tavily:
+    adapter_id: tavily
+    tool_id: tavily_mcp
+    status: optional
+    path: adapters/tavily
+    supported_packs:
+      - ai_industry_research
+      - investment_due_diligence
+    activation_conditions:
+      - current web or industry evidence is needed
+    read_permissions:
+      - public web
+    write_permissions:
+      - source registry and event ledger drafts
+
+  duckdb:
+    adapter_id: duckdb
+    tool_id: duckdb
+    status: optional
+    path: adapters/duckdb
+    supported_packs:
+      - core_research_os
+      - industrial_factor_mining
+    activation_conditions:
+      - structured SQL layer is justified
+    read_permissions:
+      - declared data paths
+    write_permissions:
+      - processed generated tables
+
+  mlflow:
+    adapter_id: mlflow
+    tool_id: mlflow
+    status: optional
+    path: adapters/mlflow
+    supported_packs:
+      - concrete_ml
+      - ai_method_paper
+    activation_conditions:
+      - multiple model runs or parameter comparisons require tracing
+    read_permissions:
+      - experiment artifacts
+    write_permissions:
+      - local MLflow directory
+
+  dvc:
+    adapter_id: dvc
+    tool_id: dvc
+    status: optional
+    path: adapters/dvc
+    supported_packs:
+      - core_research_os
+      - concrete_ml
+      - industrial_factor_mining
+    activation_conditions:
+      - data versions >= 3 or large artifacts require checkout
+    read_permissions:
+      - declared artifact paths
+    write_permissions:
+      - DVC metadata only
+
+  quarto:
+    adapter_id: quarto
+    tool_id: quarto
+    status: optional
+    path: adapters/quarto
+    supported_packs:
+      - core_research_os
+      - high_impact_journal
+    activation_conditions:
+      - report needs one-command regeneration
+    read_permissions:
+      - report source and outputs
+    write_permissions:
+      - generated report outputs
+
+  latex:
+    adapter_id: latex
+    tool_id: latex
+    status: optional
+    path: adapters/latex
+    supported_packs:
+      - high_impact_journal
+      - ai_method_paper
+    activation_conditions:
+      - final typesetting requires LaTeX
+    read_permissions:
+      - manuscript source
+    write_permissions:
+      - build outputs
+
+  papervizagent:
+    adapter_id: papervizagent
+    tool_id: papervizagent
+    status: experimental
+    path: adapters/papervizagent
+    supported_packs:
+      - advanced_figure
+    activation_conditions:
+      - conceptual or mixed figure needs multi-candidate AI illustration
+    read_permissions:
+      - constrained figure input
+    write_permissions:
+      - draft figure outputs
+
+  livefigure:
+    adapter_id: livefigure
+    tool_id: livefigure
+    status: experimental
+    path: adapters/livefigure
+    supported_packs:
+      - advanced_figure
+    activation_conditions:
+      - advanced illustration support is explicitly selected
+    read_permissions:
+      - figure brief
+    write_permissions:
+      - draft figure outputs
+
+  autofigure_edit:
+    adapter_id: autofigure_edit
+    tool_id: autofigure_edit
+    status: experimental
+    path: adapters/autofigure_edit
+    supported_packs:
+      - advanced_figure
+    activation_conditions:
+      - existing conceptual figure needs assisted editing
+    read_permissions:
+      - figure source
+    write_permissions:
+      - edited draft outputs
+
+  paperqa2:
+    adapter_id: paperqa2
+    tool_id: paperqa2
+    status: optional
+    path: adapters/paperqa2
+    supported_packs:
+      - core_research_os
+      - ai_method_paper
+      - high_impact_journal
+    activation_conditions:
+      - corpus size >= 20 PDFs or page-level evidence tracing is required
+    read_permissions:
+      - declared PDF corpus
+    write_permissions:
+      - evidence trace outputs
+
+  paperspine:
+    adapter_id: paperspine
+    tool_id: paperspine
+    status: optional
+    path: adapters/paperspine
+    supported_packs:
+      - high_impact_journal
+      - ai_method_paper
+    activation_conditions:
+      - manuscript argument architecture is needed
+    read_permissions:
+      - claim graph and evidence matrix
+    write_permissions:
+      - manuscript spine notes
+
+  academic_research_skills:
+    adapter_id: academic_research_skills
+    tool_id: academic_research_skills
+    status: optional
+    path: adapters/academic_research_skills
+    supported_packs:
+      - core_research_os
+      - high_impact_journal
+      - ai_method_paper
+    activation_conditions:
+      - review, logic, or revision planning is needed
+    read_permissions:
+      - draft artifacts
+    write_permissions:
+      - review notes
+
+  citation_check:
+    adapter_id: citation_check
+    tool_id: citation_check_skill
+    status: optional
+    path: adapters/citation_check
+    supported_packs:
+      - core_research_os
+      - high_impact_journal
+    activation_conditions:
+      - citation existence or metadata checking is needed
+    read_permissions:
+      - bibliography
+    write_permissions:
+      - citation QA report
+
+  refchecker:
+    adapter_id: refchecker
+    tool_id: refchecker
+    status: optional
+    path: adapters/refchecker
+    supported_packs:
+      - core_research_os
+      - high_impact_journal
+    activation_conditions:
+      - bibliography consistency checking is needed
+    read_permissions:
+      - bibliography and manuscript
+    write_permissions:
+      - reference check report

@@ -1,0 +1,39 @@
+schema_version: "1.0"
+purpose: "Deprecated legacy controllers and replaced registry locations."
+
+deprecated_root_files:
+  RESEARCH.md:
+    replacement: foundation/contracts/research_integrity.md
+    status: compatibility_pointer
+  TOOLCHAIN.md:
+    replacement: tool_fabric/TOOL_FABRIC.md
+    status: compatibility_pointer
+  TOOL_MODULES.md:
+    replacement: tool_fabric/registry/
+    status: compatibility_pointer
+  tool_catalog.yaml:
+    replacement: tool_fabric/registry/tools.yaml
+    status: compatibility_pointer
+  configs/modules.yaml:
+    replacement: tool_fabric/registry/profiles.yaml
+    status: compatibility_pointer
+  FIGURE_GENERATION_CONTRACT.md:
+    replacement: foundation/contracts/figure_contract.md
+    status: compatibility_pointer
+
+deprecated_directories:
+  extensions:
+    replacement: adapters
+    status: migrated_to_legacy_copy
+  data:
+    replacement: examples/research_os_project/data
+    status: example_only
+  metadata:
+    replacement: examples/research_os_project/metadata
+    status: example_only
+  experiments:
+    replacement: examples/research_os_project/experiments
+    status: example_only
+  reports:
+    replacement: examples/research_os_project/reports
+    status: example_only

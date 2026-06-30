@@ -1,0 +1,403 @@
+schema_version: "1.0"
+purpose: "Canonical Research Foundry capability-pack registry."
+
+packs:
+  core_research_os:
+    pack_id: core_research_os
+    display_name: "Core ResearchOS"
+    version: "0.1.0"
+    status: installed
+    scope: reusable_foundation
+    description: "Base evidence, data, experiment, claim, figure, citation, and release contracts for downstream ResearchOS projects."
+    project_types:
+      - empirical_materials
+      - ai_industry
+      - industrial_factor
+      - investment_due_diligence
+      - ai_method_paper
+    activation_triggers:
+      - any downstream project bootstrap or capability export
+    default_profile: base_research
+    required_tool_ids:
+      - python
+      - pandas
+      - evidence_matrix_builder
+      - markdown
+    optional_tool_ids:
+      - zotero
+      - zotero_mcp
+      - paper_search_mcp
+      - quarto
+    required_artifacts:
+      - evidence_matrix
+      - dataset_inventory
+      - claim_graph
+      - figure_spec
+      - run_manifest
+      - result_ledger
+    required_validators:
+      - validate_evidence
+      - validate_dataset_inventory
+      - validate_claim_graph
+      - validate_figure_assets
+      - validate_release
+    compatibility:
+      requires: []
+      compatible_with:
+        - concrete_ml
+        - ai_industry_research
+        - industrial_factor_mining
+        - advanced_figure
+        - high_impact_journal
+        - ai_method_paper
+        - investment_due_diligence
+    conflicts: []
+    export_paths:
+      - packs/core_research_os
+      - foundation/contracts
+      - foundation/schemas
+      - foundation/templates
+      - foundation/validators
+
+  concrete_ml:
+    pack_id: concrete_ml
+    display_name: "Concrete ML"
+    version: "0.1.0"
+    status: installed
+    scope: domain_pack
+    description: "Reusable concrete/materials ML contracts, diagnostics, figures, and validation checklists."
+    project_types:
+      - empirical_materials
+      - ai_method_paper
+    activation_triggers:
+      - concrete or materials prediction with ML and XAI
+    default_profile: concrete_ml
+    required_tool_ids:
+      - pandas
+      - scikit_learn
+      - statsmodels
+      - scipy
+      - shap
+      - matplotlib
+    optional_tool_ids:
+      - mlflow
+      - dvc
+      - optuna
+      - shap_plotting
+      - duckdb
+      - parquet
+    required_artifacts:
+      - experiment_plan
+      - run_manifest
+      - result_ledger
+      - figure_spec
+    required_validators:
+      - validate_experiment_plan
+      - validate_run_manifest
+      - validate_figure_assets
+    compatibility:
+      requires:
+        - core_research_os
+      compatible_with:
+        - advanced_figure
+        - high_impact_journal
+        - ai_method_paper
+    conflicts:
+      - investment_due_diligence
+    export_paths:
+      - packs/concrete_ml
+
+  ai_industry_research:
+    pack_id: ai_industry_research
+    display_name: "AI Industry Research"
+    version: "0.1.0"
+    status: installed
+    scope: domain_pack
+    description: "Reusable industry evidence, entity, event, and source-date tracking for AI industry research."
+    project_types:
+      - ai_industry
+      - investment_due_diligence
+      - industrial_factor
+    activation_triggers:
+      - AI company, sector, policy, market, or technology adoption research
+    default_profile: ai_industry_research
+    required_tool_ids:
+      - tavily_mcp
+      - official_source_verifier
+      - entity_registry_builder
+      - event_ledger_builder
+      - company_timeline_builder
+      - markdown
+    optional_tool_ids:
+      - zotero
+      - paper_search_mcp
+      - statsmodels
+      - duckdb
+      - parquet
+      - thesis_ledger_builder
+    required_artifacts:
+      - entity_registry
+      - event_ledger
+      - metric_registry
+      - source_registry
+    required_validators:
+      - validate_industry_thesis
+      - validate_release
+    compatibility:
+      requires:
+        - core_research_os
+      compatible_with:
+        - investment_due_diligence
+        - industrial_factor_mining
+        - advanced_figure
+    conflicts: []
+    export_paths:
+      - packs/ai_industry_research
+
+  industrial_factor_mining:
+    pack_id: industrial_factor_mining
+    display_name: "Industrial Factor Mining"
+    version: "0.1.0"
+    status: installed
+    scope: domain_pack
+    description: "Reusable factor construction, leakage control, validation split, robustness, and decision-support assets."
+    project_types:
+      - industrial_factor
+      - ai_industry
+      - investment_due_diligence
+    activation_triggers:
+      - industrial indicators, time-series factors, or validation splits are needed
+    default_profile: industrial_factor_mining
+    required_tool_ids:
+      - pandas
+      - statsmodels
+      - scipy
+      - matplotlib
+      - duckdb
+      - parquet
+    optional_tool_ids:
+      - scikit_learn
+      - mlflow
+      - dvc
+      - optuna
+      - tavily_mcp
+    required_artifacts:
+      - metric_registry
+      - run_manifest
+      - result_ledger
+      - figure_spec
+    required_validators:
+      - validate_run_manifest
+      - validate_figure_assets
+      - validate_release
+    compatibility:
+      requires:
+        - core_research_os
+      compatible_with:
+        - ai_industry_research
+        - investment_due_diligence
+        - advanced_figure
+    conflicts: []
+    export_paths:
+      - packs/industrial_factor_mining
+
+  advanced_figure:
+    pack_id: advanced_figure
+    display_name: "Advanced Figure"
+    version: "0.1.0"
+    status: installed
+    scope: enhancement_pack
+    description: "Figure contracts, briefs, data-grounded rendering, conceptual figure, mixed figure, and optional AI illustration adapters."
+    project_types:
+      - empirical_materials
+      - ai_industry
+      - industrial_factor
+      - investment_due_diligence
+      - ai_method_paper
+    activation_triggers:
+      - reportable figures require strict data/concept separation
+      - graphical abstracts or mixed figures are needed
+    default_profile: advanced_figure
+    required_tool_ids:
+      - matplotlib
+      - graphviz
+      - svg
+    optional_tool_ids:
+      - seaborn
+      - plotly
+      - altair
+      - shap_plotting
+      - papervizagent
+      - livefigure
+      - autofigure_edit
+      - figma
+      - drawio
+      - inkscape
+    required_artifacts:
+      - figure_spec
+    required_validators:
+      - validate_figure_assets
+    compatibility:
+      requires:
+        - core_research_os
+      compatible_with:
+        - concrete_ml
+        - ai_industry_research
+        - industrial_factor_mining
+        - high_impact_journal
+        - ai_method_paper
+        - investment_due_diligence
+    conflicts: []
+    export_paths:
+      - packs/advanced_figure
+      - foundation/contracts/figure_contract.md
+
+  high_impact_journal:
+    pack_id: high_impact_journal
+    display_name: "High Impact Journal"
+    version: "0.1.0"
+    status: installed
+    scope: enhancement_pack
+    description: "Reusable manuscript, figure, release, and submission-audit assets for high-impact journal preparation."
+    project_types:
+      - empirical_materials
+      - ai_method_paper
+    activation_triggers:
+      - project targets a high-impact journal or complex peer review package
+    default_profile: high_impact_journal
+    required_tool_ids:
+      - paperspine
+      - academic_research_skills
+      - citation_check_skill
+      - refchecker
+      - markdown
+    optional_tool_ids:
+      - nature_skills
+      - nature_paper_skills
+      - nature_paper_skills_submission_audit
+      - quarto
+      - latex
+      - zotero_better_bibtex
+    required_artifacts:
+      - claim_graph
+      - evidence_matrix
+      - figure_spec
+      - release_checklist
+    required_validators:
+      - validate_evidence
+      - validate_claim_graph
+      - validate_figure_assets
+      - validate_release
+    compatibility:
+      requires:
+        - core_research_os
+      compatible_with:
+        - advanced_figure
+        - concrete_ml
+        - ai_method_paper
+    conflicts:
+      - investment_due_diligence
+    export_paths:
+      - packs/high_impact_journal
+
+  ai_method_paper:
+    pack_id: ai_method_paper
+    display_name: "AI Method Paper"
+    version: "0.1.0"
+    status: installed
+    scope: domain_pack
+    description: "Reusable method-paper assets for experiments, evidence tracing, figures, manuscript argument, and release checks."
+    project_types:
+      - ai_method_paper
+      - empirical_materials
+    activation_triggers:
+      - project develops or evaluates an AI method
+    default_profile: ai_method_paper
+    required_tool_ids:
+      - scikit_learn
+      - statsmodels
+      - scipy
+      - matplotlib
+      - paperspine
+      - academic_research_skills
+    optional_tool_ids:
+      - paperqa2
+      - mlflow
+      - dvc
+      - optuna
+      - latex
+      - quarto
+      - nature_paper_skills
+    required_artifacts:
+      - experiment_plan
+      - run_manifest
+      - result_ledger
+      - claim_graph
+      - figure_spec
+    required_validators:
+      - validate_experiment_plan
+      - validate_run_manifest
+      - validate_claim_graph
+      - validate_figure_assets
+      - validate_release
+    compatibility:
+      requires:
+        - core_research_os
+      compatible_with:
+        - concrete_ml
+        - advanced_figure
+        - high_impact_journal
+    conflicts:
+      - investment_due_diligence
+    export_paths:
+      - packs/ai_method_paper
+
+  investment_due_diligence:
+    pack_id: investment_due_diligence
+    display_name: "Investment Due Diligence"
+    version: "0.1.0"
+    status: installed
+    scope: domain_pack
+    description: "Reusable AI industry diligence, thesis ledger, event tracking, comparable company, and assumption audit assets."
+    project_types:
+      - investment_due_diligence
+      - ai_industry
+    activation_triggers:
+      - investment memo, company diligence, thesis tracking, or valuation assumption review is required
+    default_profile: investment_due_diligence
+    required_tool_ids:
+      - tavily_mcp
+      - official_source_verifier
+      - entity_registry_builder
+      - event_ledger_builder
+      - thesis_ledger_builder
+      - comparable_company_builder
+      - valuation_assumption_audit
+      - markdown
+    optional_tool_ids:
+      - statsmodels
+      - duckdb
+      - parquet
+      - plotly
+      - quarto
+    required_artifacts:
+      - entity_registry
+      - event_ledger
+      - thesis_ledger
+      - investment_memo
+    required_validators:
+      - validate_industry_thesis
+      - validate_release
+    compatibility:
+      requires:
+        - core_research_os
+      compatible_with:
+        - ai_industry_research
+        - industrial_factor_mining
+        - advanced_figure
+    conflicts:
+      - concrete_ml
+      - high_impact_journal
+      - ai_method_paper
+    export_paths:
+      - packs/investment_due_diligence

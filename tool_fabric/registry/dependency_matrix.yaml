@@ -1,0 +1,85 @@
+schema_version: "1.0"
+purpose: "Optional dependency and install trigger matrix."
+
+dependency_groups:
+  base:
+    python_packages:
+      - pandas
+      - matplotlib
+      - pyyaml
+    system_packages: []
+    tools:
+      - python
+      - pandas
+      - matplotlib
+  data_experiment:
+    python_packages:
+      - scikit-learn
+      - scipy
+      - statsmodels
+      - shap
+      - seaborn
+    activation_triggers:
+      - concrete ML or AI method experiments require modeling and diagnostics
+    tools:
+      - scikit_learn
+      - scipy
+      - statsmodels
+      - shap
+      - seaborn
+  structured_storage:
+    python_packages:
+      - duckdb
+      - pyarrow
+    activation_triggers:
+      - DuckDB + Parquet structured storage is needed
+    tools:
+      - duckdb
+      - parquet
+  publication_output:
+    python_packages:
+      - jupyter
+    system_packages:
+      - quarto
+      - pandoc
+      - texlive
+    activation_triggers:
+      - reports require one-command regeneration or final typesetting
+    tools:
+      - quarto
+      - pandoc
+      - latex
+  artifact_versioning:
+    python_packages:
+      - dvc
+    activation_triggers:
+      - large or multi-version artifacts require DVC
+    tools:
+      - dvc
+  experiment_tracking:
+    python_packages:
+      - mlflow
+    activation_triggers:
+      - multiple model runs require local experiment tracking
+    tools:
+      - mlflow
+
+heavy_tools:
+  - dvc
+  - mlflow
+  - optuna
+  - great_expectations_optional
+  - papervizagent
+  - livefigure
+  - autofigure_edit
+
+never_install_by_default:
+  - dvc
+  - mlflow
+  - optuna
+  - great_expectations_optional
+  - papervizagent
+  - livefigure
+  - autofigure_edit
+  - figma
+  - latex

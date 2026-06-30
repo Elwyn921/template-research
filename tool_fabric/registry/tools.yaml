@@ -1,0 +1,3279 @@
+schema_version: "1.0"
+purpose: "Canonical Research Foundry tool registry."
+
+controlled_vocabularies:
+  status:
+    - not_installed
+    - optional
+    - installed
+    - experimental
+    - deprecated
+    - blocked
+  role:
+    - primary
+    - secondary
+    - conditional
+    - fallback
+    - audit_only
+  source_type:
+    - local_python
+    - mcp
+    - external_skill
+    - cli
+    - library
+    - manual_tool
+    - cloud_service
+
+defaults:
+  permissions: &default_permissions
+    network_access: optional
+    filesystem_write_scope: declared_artifacts_only
+    data_sensitivity: no_private_or_restricted_data_without_project_approval
+    code_execution: false
+  downstream_export_policy: &default_export
+    exportable: true
+    export_mode: manifest_reference
+    protected_paths:
+      - AGENTS.md
+      - 08_tools/TOOLFLOW.md
+  risk_notes: &default_risks
+    hallucination_risk: medium
+    provenance_risk: medium
+    reproducibility_risk: medium
+    supply_chain_risk: medium
+  local_scope: &local_scope
+    - foundry
+    - research_os
+  all_project_types: &all_project_types
+    - empirical_materials
+    - ai_industry
+    - industrial_factor
+    - investment_due_diligence
+    - ai_method_paper
+
+tools:
+  paper_search_mcp:
+    tool_id: paper_search_mcp
+    display_name: "Paper Search MCP"
+    category: F01_discovery_external_evidence
+    sub_category: academic_metadata_discovery
+    role: primary
+    status: optional
+    source_type: mcp
+    source_repository: "MCP-compatible paper search service"
+    source_url: "https://modelcontextprotocol.io/"
+    license: service_specific
+    version_pin: ""
+    installation_mode: explicit_user_config
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - academic literature and metadata discovery
+      - candidate paper retrieval
+    activation_triggers:
+      - task mentions literature discovery or external paper lookup
+      - local Zotero library is insufficient
+    inputs:
+      - query
+      - domain constraints
+      - date range
+    outputs:
+      - paper metadata
+      - source candidates
+    artifact_contracts:
+      - source registry entry
+      - evidence matrix row
+    permissions:
+      <<: *default_permissions
+      network_access: required
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services:
+        - paper_search_mcp_server
+      credentials_required: []
+    overlap_group: literature_discovery
+    default_priority: 20
+    fallback_tools:
+      - openalex_adapter
+      - crossref_adapter
+      - semantic_scholar_adapter
+    conflicts_with: []
+    compatibility_notes:
+      - Use for discovery only; never finalize a research claim.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - selected sources support reportable claims
+      - search results are contradictory or low confidence
+    downstream_export_policy: *default_export
+
+  tavily_mcp:
+    tool_id: tavily_mcp
+    display_name: "Tavily MCP"
+    category: F01_discovery_external_evidence
+    sub_category: web_industry_evidence
+    role: primary
+    status: optional
+    source_type: mcp
+    source_repository: "Tavily MCP"
+    source_url: "https://github.com/tavily-ai/tavily-mcp"
+    license: service_specific
+    version_pin: ""
+    installation_mode: explicit_user_config
+    default_scope:
+      - foundry
+      - research_os
+      - industry_program
+    allowed_project_types:
+      - ai_industry
+      - industrial_factor
+      - investment_due_diligence
+      - ai_method_paper
+    primary_tasks:
+      - industry evidence discovery
+      - company and policy source lookup
+      - current web evidence retrieval
+    activation_triggers:
+      - task needs current company, market, policy, release, or web evidence
+      - source date and as-of date are required
+    inputs:
+      - query
+      - source priority
+      - time window
+    outputs:
+      - source candidates with URLs
+      - evidence notes
+    artifact_contracts:
+      - source registry entry with event_date, disclosure_date, and as_of_date
+      - event ledger row
+    permissions:
+      <<: *default_permissions
+      network_access: required
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services:
+        - tavily
+      credentials_required:
+        - TAVILY_API_KEY
+    overlap_group: web_discovery
+    default_priority: 20
+    fallback_tools:
+      - official_source_verifier
+    conflicts_with: []
+    compatibility_notes:
+      - Prefer official and primary sources before news or commentary.
+    risk_notes:
+      hallucination_risk: medium
+      provenance_risk: high
+      reproducibility_risk: medium
+      supply_chain_risk: medium
+    human_review_required_when:
+      - source will support investment, strategy, or company claims
+      - source is not official or primary
+    downstream_export_policy: *default_export
+
+  zotero:
+    tool_id: zotero
+    display_name: Zotero
+    category: F01_discovery_external_evidence
+    sub_category: literature_asset_storage
+    role: primary
+    status: optional
+    source_type: manual_tool
+    source_repository: zotero/zotero
+    source_url: "https://github.com/zotero/zotero"
+    license: AGPL-3.0
+    version_pin: ""
+    installation_mode: user_desktop_install
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - reference library management
+      - source asset storage
+      - tags and notes
+    activation_triggers:
+      - project maintains reusable citation library
+      - literature evidence must be organized outside Git
+    inputs:
+      - DOI
+      - PDF
+      - URL
+      - bibliographic metadata
+    outputs:
+      - citation records
+      - notes
+      - bibliography exports
+    artifact_contracts:
+      - source registry entry
+      - exported bibliography when needed
+    permissions:
+      <<: *default_permissions
+      filesystem_write_scope: user_library_outside_repo
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: reference_management
+    default_priority: 10
+    fallback_tools:
+      - zotero_mcp
+      - zotero_notes
+    conflicts_with: []
+    compatibility_notes:
+      - Do not commit local Zotero databases or restricted PDFs.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: low
+      reproducibility_risk: medium
+      supply_chain_risk: low
+    human_review_required_when:
+      - restricted PDFs or licensed content are involved
+    downstream_export_policy: *default_export
+
+  zotero_mcp:
+    tool_id: zotero_mcp
+    display_name: "Zotero MCP"
+    category: F01_discovery_external_evidence
+    sub_category: local_library_access
+    role: secondary
+    status: optional
+    source_type: mcp
+    source_repository: zotero_mcp_compatible_server
+    source_url: "https://modelcontextprotocol.io/"
+    license: server_specific
+    version_pin: ""
+    installation_mode: explicit_user_config
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - query local Zotero library
+      - retrieve citation metadata
+    activation_triggers:
+      - task references local library search
+      - Zotero is already maintained by the project
+    inputs:
+      - library query
+      - collection or tag
+    outputs:
+      - citation metadata
+      - item notes
+    artifact_contracts:
+      - source registry entry
+    permissions:
+      <<: *default_permissions
+      filesystem_write_scope: read_user_library_only
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services:
+        - local_zotero_mcp_server
+      credentials_required: []
+    overlap_group: reference_management
+    default_priority: 15
+    fallback_tools:
+      - zotero
+    conflicts_with: []
+    compatibility_notes:
+      - Optional access layer; Zotero remains the citation spine.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - search output will be treated as exhaustive
+    downstream_export_policy: *default_export
+
+  openalex_adapter:
+    tool_id: openalex_adapter
+    display_name: "OpenAlex Adapter"
+    category: F01_discovery_external_evidence
+    sub_category: bibliographic_api
+    role: fallback
+    status: optional
+    source_type: cloud_service
+    source_repository: OpenAlex
+    source_url: "https://docs.openalex.org/"
+    license: service_terms
+    version_pin: ""
+    installation_mode: no_install_http_api
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - open scholarly metadata lookup
+    activation_triggers:
+      - DOI or title metadata needs open verification
+    inputs:
+      - DOI
+      - title
+      - author
+    outputs:
+      - work metadata
+      - venue metadata
+    artifact_contracts:
+      - citation metadata note
+    permissions:
+      <<: *default_permissions
+      network_access: required
+    dependencies:
+      python_packages:
+        - requests
+      system_packages: []
+      external_services:
+        - OpenAlex
+      credentials_required: []
+    overlap_group: academic_metadata
+    default_priority: 50
+    fallback_tools:
+      - crossref_adapter
+      - semantic_scholar_adapter
+    conflicts_with: []
+    compatibility_notes:
+      - Use for metadata verification, not claim synthesis.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - metadata conflicts with publisher records
+    downstream_export_policy: *default_export
+
+  crossref_adapter:
+    tool_id: crossref_adapter
+    display_name: "Crossref Adapter"
+    category: F01_discovery_external_evidence
+    sub_category: doi_metadata_api
+    role: fallback
+    status: optional
+    source_type: cloud_service
+    source_repository: Crossref REST API
+    source_url: "https://github.com/Crossref/rest-api-doc"
+    license: service_terms
+    version_pin: ""
+    installation_mode: no_install_http_api
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - DOI metadata verification
+    activation_triggers:
+      - citation DOI metadata must be checked
+    inputs:
+      - DOI
+      - title
+    outputs:
+      - citation metadata
+    artifact_contracts:
+      - citation metadata note
+    permissions:
+      <<: *default_permissions
+      network_access: required
+    dependencies:
+      python_packages:
+        - requests
+      system_packages: []
+      external_services:
+        - Crossref
+      credentials_required: []
+    overlap_group: academic_metadata
+    default_priority: 55
+    fallback_tools:
+      - openalex_adapter
+    conflicts_with: []
+    compatibility_notes:
+      - Prefer publisher metadata when conflicts remain.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - metadata conflicts with cited PDF or publisher page
+    downstream_export_policy: *default_export
+
+  semantic_scholar_adapter:
+    tool_id: semantic_scholar_adapter
+    display_name: "Semantic Scholar Adapter"
+    category: F01_discovery_external_evidence
+    sub_category: scholarly_graph_api
+    role: fallback
+    status: optional
+    source_type: cloud_service
+    source_repository: Semantic Scholar API
+    source_url: "https://api.semanticscholar.org/api-docs/"
+    license: service_terms
+    version_pin: ""
+    installation_mode: no_install_http_api
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - citation graph lookup
+      - abstract metadata discovery
+    activation_triggers:
+      - citation network or abstract metadata is needed
+    inputs:
+      - DOI
+      - title
+      - author
+    outputs:
+      - paper metadata
+      - citation relationships
+    artifact_contracts:
+      - citation metadata note
+    permissions:
+      <<: *default_permissions
+      network_access: required
+    dependencies:
+      python_packages:
+        - requests
+      system_packages: []
+      external_services:
+        - Semantic Scholar
+      credentials_required: []
+    overlap_group: academic_metadata
+    default_priority: 60
+    fallback_tools:
+      - openalex_adapter
+    conflicts_with: []
+    compatibility_notes:
+      - Use citation graph output as context, not as proof.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - citation graph is used for systematic review scope
+    downstream_export_policy: *default_export
+
+  literature_survey_skill:
+    tool_id: literature_survey_skill
+    display_name: "Literature Survey Skill"
+    category: F02_literature_intelligence
+    sub_category: synthesis
+    role: primary
+    status: optional
+    source_type: external_skill
+    source_repository: task_relevant_literature_skill
+    source_url: "https://github.com/K-Dense-AI/scientific-agent-skills"
+    license: upstream_specific
+    version_pin: ""
+    installation_mode: explicit_skill_install
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - literature synthesis
+      - evidence table drafting
+    activation_triggers:
+      - task asks for literature synthesis or related-work structure
+    inputs:
+      - source list
+      - research question
+      - inclusion criteria
+    outputs:
+      - synthesis notes
+      - evidence matrix draft
+    artifact_contracts:
+      - evidence matrix
+      - source registry
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: literature_synthesis
+    default_priority: 10
+    fallback_tools:
+      - paperqa2
+      - zotero_notes
+    conflicts_with: []
+    compatibility_notes:
+      - Default synthesis tool; project-level judgment remains outside the tool.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - synthesis supports reportable claims
+      - paper selection criteria are ambiguous
+    downstream_export_policy: *default_export
+
+  paperqa2:
+    tool_id: paperqa2
+    display_name: PaperQA2
+    category: F02_literature_intelligence
+    sub_category: evidence_tracing
+    role: conditional
+    status: optional
+    source_type: library
+    source_repository: Future-House/paper-qa
+    source_url: "https://github.com/Future-House/paper-qa"
+    license: BSD-3-Clause
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - deep reading over paper corpus
+      - page-level evidence tracing
+      - contradiction analysis
+    activation_triggers:
+      - corpus size >= 20 PDFs
+      - contradiction analysis
+      - page-level evidence tracing
+      - systematic review
+      - precise method or equation comparison
+    inputs:
+      - PDF corpus
+      - question
+      - citation metadata
+    outputs:
+      - claim-to-source traces
+      - quoted support snippets
+      - contradiction notes
+    artifact_contracts:
+      - evidence matrix
+      - claim graph
+    permissions:
+      <<: *default_permissions
+      network_access: optional
+      filesystem_write_scope: declared_corpus_cache_only
+    dependencies:
+      python_packages:
+        - paper-qa
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: literature_synthesis
+    default_priority: 30
+    fallback_tools:
+      - literature_survey_skill
+    conflicts_with: []
+    compatibility_notes:
+      - Conditional only; it must not replace project-level judgment.
+    risk_notes:
+      hallucination_risk: medium
+      provenance_risk: medium
+      reproducibility_risk: high
+      supply_chain_risk: medium
+    human_review_required_when:
+      - cited support is used in manuscript text
+      - model answer contains inferential claims
+    downstream_export_policy: *default_export
+
+  zotero_notes:
+    tool_id: zotero_notes
+    display_name: "Zotero Notes"
+    category: F02_literature_intelligence
+    sub_category: note_storage
+    role: secondary
+    status: optional
+    source_type: manual_tool
+    source_repository: Zotero
+    source_url: "https://www.zotero.org/support/notes"
+    license: service_terms
+    version_pin: ""
+    installation_mode: user_desktop_install
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - source annotations
+      - reading notes
+    activation_triggers:
+      - local reading notes are the evidence spine
+    inputs:
+      - citation items
+      - annotations
+    outputs:
+      - note exports
+    artifact_contracts:
+      - source note
+    permissions:
+      <<: *default_permissions
+      filesystem_write_scope: user_library_outside_repo
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: note_storage
+    default_priority: 25
+    fallback_tools:
+      - evidence_matrix_builder
+    conflicts_with: []
+    compatibility_notes:
+      - Notes are evidence aids, not final claims.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: medium
+      supply_chain_risk: low
+    human_review_required_when:
+      - notes are paraphrased into reportable claims
+    downstream_export_policy: *default_export
+
+  evidence_matrix_builder:
+    tool_id: evidence_matrix_builder
+    display_name: "Evidence Matrix Builder"
+    category: F02_literature_intelligence
+    sub_category: structured_evidence
+    role: primary
+    status: installed
+    source_type: local_python
+    source_repository: Elwyn921/template-research
+    source_url: local
+    license: repository
+    version_pin: "0.1.0"
+    installation_mode: included
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - structured source-to-claim table creation
+    activation_triggers:
+      - claim evidence needs source traceability
+    inputs:
+      - source records
+      - claims
+    outputs:
+      - evidence matrix
+    artifact_contracts:
+      - evidence_matrix.schema.yaml
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - pyyaml
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: evidence_structuring
+    default_priority: 10
+    fallback_tools: []
+    conflicts_with: []
+    compatibility_notes:
+      - Writes structured evidence records only.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: low
+      supply_chain_risk: low
+    human_review_required_when:
+      - evidence matrix is used for manuscript claims
+    downstream_export_policy: *default_export
+
+  python:
+    tool_id: python
+    display_name: Python
+    category: F03_data_engineering_structured_storage
+    sub_category: automation_language
+    role: primary
+    status: installed
+    source_type: local_python
+    source_repository: python/cpython
+    source_url: "https://github.com/python/cpython"
+    license: PSF-2.0
+    version_pin: ">=3.11"
+    installation_mode: base_environment
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - transformation
+      - analytics
+      - validation
+      - automation
+    activation_triggers:
+      - data processing or validation is required
+    inputs:
+      - files
+      - configs
+    outputs:
+      - generated artifacts
+      - logs
+    artifact_contracts:
+      - run manifest
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: programming_language
+    default_priority: 1
+    fallback_tools: []
+    conflicts_with: []
+    compatibility_notes:
+      - Default automation language for Foundry utilities.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: low
+      reproducibility_risk: low
+      supply_chain_risk: low
+    human_review_required_when:
+      - code changes affect reportable outputs
+    downstream_export_policy: *default_export
+
+  pandas:
+    tool_id: pandas
+    display_name: pandas
+    category: F03_data_engineering_structured_storage
+    sub_category: tabular_data
+    role: primary
+    status: installed
+    source_type: library
+    source_repository: pandas-dev/pandas
+    source_url: "https://github.com/pandas-dev/pandas"
+    license: BSD-3-Clause
+    version_pin: ">=2.2"
+    installation_mode: base_environment
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - tabular data inspection
+      - CSV and Excel transformation
+    activation_triggers:
+      - data table needs local transformation or audit
+    inputs:
+      - CSV
+      - Excel
+      - Parquet
+    outputs:
+      - DataFrame
+      - processed table
+    artifact_contracts:
+      - dataset inventory
+      - result ledger
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - pandas
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: dataframe_engine
+    default_priority: 10
+    fallback_tools:
+      - polars
+      - duckdb
+    conflicts_with: []
+    compatibility_notes:
+      - Default table engine until scale or query needs justify DuckDB or Polars.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: low
+      supply_chain_risk: low
+    human_review_required_when:
+      - transformations define reportable datasets
+    downstream_export_policy: *default_export
+
+  polars:
+    tool_id: polars
+    display_name: Polars
+    category: F03_data_engineering_structured_storage
+    sub_category: tabular_data
+    role: conditional
+    status: optional
+    source_type: library
+    source_repository: pola-rs/polars
+    source_url: "https://github.com/pola-rs/polars"
+    license: MIT
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - faster local dataframe operations
+    activation_triggers:
+      - pandas becomes slow or memory-bound
+      - lazy query planning is useful
+    inputs:
+      - tabular files
+    outputs:
+      - processed table
+    artifact_contracts:
+      - dataset inventory
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - polars
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: dataframe_engine
+    default_priority: 35
+    fallback_tools:
+      - pandas
+      - duckdb
+    conflicts_with: []
+    compatibility_notes:
+      - Use when scale justifies another dataframe dependency.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - introducing Polars changes pipeline semantics
+    downstream_export_policy: *default_export
+
+  duckdb:
+    tool_id: duckdb
+    display_name: DuckDB
+    category: F03_data_engineering_structured_storage
+    sub_category: local_analytics_database
+    role: primary
+    status: optional
+    source_type: library
+    source_repository: duckdb/duckdb
+    source_url: "https://github.com/duckdb/duckdb"
+    license: MIT
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - local analytical SQL
+      - structured research data layer
+    activation_triggers:
+      - multiple tables need repeatable SQL joins
+      - Parquet-backed structured storage is desired
+    inputs:
+      - CSV
+      - Parquet
+      - SQL
+    outputs:
+      - query results
+      - Parquet tables
+    artifact_contracts:
+      - dataset inventory
+      - data contract
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - duckdb
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: structured_storage
+    default_priority: 15
+    fallback_tools:
+      - pandas
+    conflicts_with: []
+    compatibility_notes:
+      - Canonical local structured research data layer with Parquet.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: low
+      supply_chain_risk: low
+    human_review_required_when:
+      - SQL transforms define reportable outputs
+    downstream_export_policy: *default_export
+
+  parquet:
+    tool_id: parquet
+    display_name: Parquet
+    category: F03_data_engineering_structured_storage
+    sub_category: columnar_storage
+    role: primary
+    status: optional
+    source_type: library
+    source_repository: apache/parquet-format
+    source_url: "https://github.com/apache/parquet-format"
+    license: Apache-2.0
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - reproducible columnar data storage
+    activation_triggers:
+      - processed tables are reused across steps
+      - DuckDB or pandas writes processed datasets
+    inputs:
+      - processed table
+    outputs:
+      - Parquet file
+    artifact_contracts:
+      - dataset inventory
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - pyarrow
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: data_storage_format
+    default_priority: 15
+    fallback_tools:
+      - CSV
+    conflicts_with: []
+    compatibility_notes:
+      - Raw data remains immutable; processed data is code-generated.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: low
+      reproducibility_risk: low
+      supply_chain_risk: low
+    human_review_required_when:
+      - Parquet replaces human-readable release artifacts
+    downstream_export_policy: *default_export
+
+  pandera:
+    tool_id: pandera
+    display_name: Pandera
+    category: F03_data_engineering_structured_storage
+    sub_category: dataframe_validation
+    role: conditional
+    status: optional
+    source_type: library
+    source_repository: unionai-oss/pandera
+    source_url: "https://github.com/unionai-oss/pandera"
+    license: MIT
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - dataframe schema validation
+    activation_triggers:
+      - schemas are reused across multiple data releases
+      - manual validation becomes brittle
+    inputs:
+      - DataFrame
+      - schema
+    outputs:
+      - validation report
+    artifact_contracts:
+      - dataset inventory
+      - data contract
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - pandera
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: data_validation
+    default_priority: 25
+    fallback_tools:
+      - validate_dataset_inventory
+    conflicts_with: []
+    compatibility_notes:
+      - Add only when repeated schema validation justifies it.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - validation rules affect inclusion/exclusion decisions
+    downstream_export_policy: *default_export
+
+  great_expectations_optional:
+    tool_id: great_expectations_optional
+    display_name: "Great Expectations"
+    category: F03_data_engineering_structured_storage
+    sub_category: data_quality_suite
+    role: conditional
+    status: optional
+    source_type: library
+    source_repository: great-expectations/great_expectations
+    source_url: "https://github.com/great-expectations/great_expectations"
+    license: Apache-2.0
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - data quality expectations
+    activation_triggers:
+      - project requires formal data quality suites
+      - repeated stakeholder-facing data checks are needed
+    inputs:
+      - dataset
+      - expectations
+    outputs:
+      - validation suite
+      - validation report
+    artifact_contracts:
+      - dataset inventory
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - great_expectations
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: data_validation
+    default_priority: 45
+    fallback_tools:
+      - pandera
+    conflicts_with: []
+    compatibility_notes:
+      - Heavy optional validation suite; not a default Foundry dependency.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: high
+      supply_chain_risk: medium
+    human_review_required_when:
+      - enabling introduces generated configs or service settings
+    downstream_export_policy: *default_export
+
+  excel_export_adapter:
+    tool_id: excel_export_adapter
+    display_name: "Excel Export Adapter"
+    category: F03_data_engineering_structured_storage
+    sub_category: delivery_format
+    role: secondary
+    status: optional
+    source_type: library
+    source_repository: pandas-dev/pandas
+    source_url: "https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_excel.html"
+    license: BSD-3-Clause
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - spreadsheet delivery
+      - manual inspection extracts
+    activation_triggers:
+      - stakeholder requests spreadsheet output
+      - table needs manual inspection
+    inputs:
+      - processed table
+    outputs:
+      - xlsx file
+    artifact_contracts:
+      - result ledger
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - openpyxl
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: delivery_format
+    default_priority: 40
+    fallback_tools:
+      - CSV
+    conflicts_with: []
+    compatibility_notes:
+      - Excel is an inspection and delivery layer only.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - spreadsheet output is manually edited outside the pipeline
+    downstream_export_policy: *default_export
+
+  scikit_learn:
+    tool_id: scikit_learn
+    display_name: scikit-learn
+    category: F04_modeling_experimentation
+    sub_category: machine_learning
+    role: primary
+    status: optional
+    source_type: library
+    source_repository: scikit-learn/scikit-learn
+    source_url: "https://github.com/scikit-learn/scikit-learn"
+    license: BSD-3-Clause
+    version_pin: ">=1.5"
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - industrial_factor
+      - ai_method_paper
+    primary_tasks:
+      - baseline models
+      - predictive modeling
+      - model comparison
+    activation_triggers:
+      - prediction, classification, regression, or model diagnostics are required
+    inputs:
+      - features
+      - target
+      - split definition
+    outputs:
+      - fitted model
+      - predictions
+      - metrics
+    artifact_contracts:
+      - experiment plan
+      - run manifest
+      - result ledger
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - scikit-learn
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: modeling_core
+    default_priority: 10
+    fallback_tools:
+      - statsmodels
+    conflicts_with: []
+    compatibility_notes:
+      - Default analytical core for concrete/materials ML.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: medium
+      supply_chain_risk: low
+    human_review_required_when:
+      - metrics support reportable conclusions
+      - split definitions or leakage controls are uncertain
+    downstream_export_policy: *default_export
+
+  statsmodels:
+    tool_id: statsmodels
+    display_name: statsmodels
+    category: F04_modeling_experimentation
+    sub_category: statistical_modeling
+    role: primary
+    status: optional
+    source_type: library
+    source_repository: statsmodels/statsmodels
+    source_url: "https://github.com/statsmodels/statsmodels"
+    license: BSD-3-Clause
+    version_pin: ">=0.14"
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - ai_industry
+      - industrial_factor
+      - investment_due_diligence
+      - ai_method_paper
+    primary_tasks:
+      - statistical models
+      - diagnostics
+      - coefficient inference
+    activation_triggers:
+      - statistical inference or model diagnostics are required
+    inputs:
+      - dataset
+      - model formula or design matrix
+    outputs:
+      - fitted model
+      - diagnostics
+      - coefficient table
+    artifact_contracts:
+      - experiment plan
+      - result ledger
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - statsmodels
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: statistical_modeling
+    default_priority: 10
+    fallback_tools:
+      - scipy
+    conflicts_with: []
+    compatibility_notes:
+      - Default statistical core for factor and industry research.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: medium
+      supply_chain_risk: low
+    human_review_required_when:
+      - statistical inference supports a causal or investment claim
+    downstream_export_policy: *default_export
+
+  scipy:
+    tool_id: scipy
+    display_name: SciPy
+    category: F04_modeling_experimentation
+    sub_category: scientific_computing
+    role: primary
+    status: optional
+    source_type: library
+    source_repository: scipy/scipy
+    source_url: "https://github.com/scipy/scipy"
+    license: BSD-3-Clause
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - statistical tests
+      - optimization
+      - numerical methods
+    activation_triggers:
+      - scientific computation or statistical test is required
+    inputs:
+      - arrays
+      - model parameters
+    outputs:
+      - computed result
+      - diagnostics
+    artifact_contracts:
+      - result ledger
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - scipy
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: statistical_modeling
+    default_priority: 20
+    fallback_tools: []
+    conflicts_with: []
+    compatibility_notes:
+      - Use with explicit methods and assumptions.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - test choice affects reportable inference
+    downstream_export_policy: *default_export
+
+  shap:
+    tool_id: shap
+    display_name: SHAP
+    category: F04_modeling_experimentation
+    sub_category: explainable_ai
+    role: primary
+    status: optional
+    source_type: library
+    source_repository: shap/shap
+    source_url: "https://github.com/shap/shap"
+    license: MIT
+    version_pin: ">=0.46"
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - ai_method_paper
+    primary_tasks:
+      - model explanation
+      - feature attribution
+    activation_triggers:
+      - explainable AI output is needed
+      - model interpretation figure is required
+    inputs:
+      - fitted model
+      - feature matrix
+    outputs:
+      - SHAP values
+      - feature attribution tables
+    artifact_contracts:
+      - result ledger
+      - figure spec
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - shap
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: model_interpretability
+    default_priority: 10
+    fallback_tools: []
+    conflicts_with: []
+    compatibility_notes:
+      - SHAP values are quantitative marks and require data-grounded figures.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: medium
+      supply_chain_risk: medium
+    human_review_required_when:
+      - interpretation is presented as material mechanism or causal evidence
+    downstream_export_policy: *default_export
+
+  mlflow:
+    tool_id: mlflow
+    display_name: MLflow
+    category: F04_modeling_experimentation
+    sub_category: experiment_tracking
+    role: conditional
+    status: optional
+    source_type: library
+    source_repository: mlflow/mlflow
+    source_url: "https://github.com/mlflow/mlflow"
+    license: Apache-2.0
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - industrial_factor
+      - ai_method_paper
+    primary_tasks:
+      - local experiment tracking
+      - parameter and artifact comparison
+    activation_triggers:
+      - multiple model runs
+      - parameter comparisons
+      - artifact tracing is required
+    inputs:
+      - run parameters
+      - metrics
+      - artifacts
+    outputs:
+      - experiment log
+      - artifact references
+    artifact_contracts:
+      - experiment registry
+      - run manifest
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      filesystem_write_scope: local_mlflow_directory
+      code_execution: true
+    dependencies:
+      python_packages:
+        - mlflow
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: experiment_tracking
+    default_priority: 40
+    fallback_tools:
+      - experiment_registry_csv
+    conflicts_with: []
+    compatibility_notes:
+      - Activate only when multiple runs or artifact tracing matter.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: high
+      supply_chain_risk: medium
+    human_review_required_when:
+      - enabling generated local service state
+    downstream_export_policy: *default_export
+
+  dvc:
+    tool_id: dvc
+    display_name: DVC
+    category: F04_modeling_experimentation
+    sub_category: artifact_versioning
+    role: conditional
+    status: optional
+    source_type: cli
+    source_repository: iterative/dvc
+    source_url: "https://github.com/iterative/dvc"
+    license: Apache-2.0
+    version_pin: ">=3.0"
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - large artifact versioning
+      - pipeline artifact checkout
+    activation_triggers:
+      - data versions >= 3
+      - datasets are large
+      - collaboration requires artifact checkout
+      - pipeline reproducibility becomes difficult
+    inputs:
+      - artifact paths
+      - pipeline stages
+    outputs:
+      - dvc metadata
+      - artifact pointers
+    artifact_contracts:
+      - data manifest
+      - run manifest
+    permissions:
+      <<: *default_permissions
+      network_access: optional
+      filesystem_write_scope: dvc_metadata_and_config
+      code_execution: true
+    dependencies:
+      python_packages:
+        - dvc
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: artifact_versioning
+    default_priority: 50
+    fallback_tools:
+      - human_readable_manifests
+    conflicts_with: []
+    compatibility_notes:
+      - Conditional only; Git plus readable manifests remain the default.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: high
+      supply_chain_risk: medium
+    human_review_required_when:
+      - remote storage or credentials are needed
+    downstream_export_policy: *default_export
+
+  optuna:
+    tool_id: optuna
+    display_name: Optuna
+    category: F04_modeling_experimentation
+    sub_category: hyperparameter_optimization
+    role: conditional
+    status: optional
+    source_type: library
+    source_repository: optuna/optuna
+    source_url: "https://github.com/optuna/optuna"
+    license: MIT
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - industrial_factor
+      - ai_method_paper
+    primary_tasks:
+      - systematic hyperparameter search
+    activation_triggers:
+      - hyperparameter search is justified by baseline results
+    inputs:
+      - objective function
+      - search space
+    outputs:
+      - trials
+      - selected parameters
+    artifact_contracts:
+      - experiment plan
+      - run manifest
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - optuna
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: hyperparameter_search
+    default_priority: 45
+    fallback_tools:
+      - manual_grid_search
+    conflicts_with: []
+    compatibility_notes:
+      - Do not activate before a systematic search is justified.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - search design changes comparison fairness
+    downstream_export_policy: *default_export
+
+  experiment_agent:
+    tool_id: experiment_agent
+    display_name: "Experiment Agent"
+    category: F04_modeling_experimentation
+    sub_category: review_checklist
+    role: audit_only
+    status: optional
+    source_type: external_skill
+    source_repository: scientific_agent_skills
+    source_url: "https://github.com/K-Dense-AI/scientific-agent-skills"
+    license: upstream_specific
+    version_pin: ""
+    installation_mode: explicit_skill_install
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - experiment plan review
+      - diagnostics checklist
+    activation_triggers:
+      - experiment design needs an independent checklist
+    inputs:
+      - experiment plan
+    outputs:
+      - review notes
+    artifact_contracts:
+      - experiment plan
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: experiment_review
+    default_priority: 70
+    fallback_tools: []
+    conflicts_with: []
+    compatibility_notes:
+      - Review/checklist profile only; never controls experiments.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - checklist disagrees with project design
+    downstream_export_policy: *default_export
+
+  matplotlib:
+    tool_id: matplotlib
+    display_name: Matplotlib
+    category: F05_data_visualization
+    sub_category: publication_plotting
+    role: primary
+    status: installed
+    source_type: library
+    source_repository: matplotlib/matplotlib
+    source_url: "https://github.com/matplotlib/matplotlib"
+    license: PSF-based
+    version_pin: ">=3.9"
+    installation_mode: base_environment
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - publication-grade quantitative figures
+      - local figure rendering
+    activation_triggers:
+      - exact quantitative figure is needed
+      - figure must save source code and static assets
+    inputs:
+      - source data
+      - plot specification
+    outputs:
+      - PNG
+      - PDF
+      - SVG
+      - sidecar record
+    artifact_contracts:
+      - figure spec
+      - result ledger
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - matplotlib
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: static_plotting
+    default_priority: 10
+    fallback_tools:
+      - seaborn
+      - altair
+      - plotly
+    conflicts_with: []
+    compatibility_notes:
+      - Default publication-grade quantitative figure engine.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: low
+      supply_chain_risk: low
+    human_review_required_when:
+      - figure supports reportable evidence
+    downstream_export_policy: *default_export
+
+  shap_plotting:
+    tool_id: shap_plotting
+    display_name: "SHAP Plotting"
+    category: F05_data_visualization
+    sub_category: model_interpretation_figures
+    role: primary
+    status: optional
+    source_type: library
+    source_repository: shap/shap
+    source_url: "https://github.com/shap/shap"
+    license: MIT
+    version_pin: ">=0.46"
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - ai_method_paper
+    primary_tasks:
+      - SHAP summary plots
+      - attribution visualization
+    activation_triggers:
+      - SHAP values are generated and need reportable visualization
+    inputs:
+      - SHAP values
+      - feature matrix
+    outputs:
+      - SHAP figure
+    artifact_contracts:
+      - figure spec
+      - result ledger
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - shap
+        - matplotlib
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: static_plotting
+    default_priority: 20
+    fallback_tools:
+      - matplotlib
+    conflicts_with: []
+    compatibility_notes:
+      - SHAP plots are exact quantitative artifacts.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - attributions are interpreted as mechanisms
+    downstream_export_policy: *default_export
+
+  seaborn:
+    tool_id: seaborn
+    display_name: seaborn
+    category: F05_data_visualization
+    sub_category: statistical_plotting
+    role: secondary
+    status: optional
+    source_type: library
+    source_repository: mwaskom/seaborn
+    source_url: "https://github.com/mwaskom/seaborn"
+    license: BSD-3-Clause
+    version_pin: ">=0.13"
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - statistical plots
+      - distribution views
+    activation_triggers:
+      - statistical chart convenience is useful
+    inputs:
+      - source data
+    outputs:
+      - static figure
+    artifact_contracts:
+      - figure spec
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - seaborn
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: static_plotting
+    default_priority: 25
+    fallback_tools:
+      - matplotlib
+    conflicts_with: []
+    compatibility_notes:
+      - Use when it preserves traceable source data and figure code.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - automatic aggregation or confidence intervals affect interpretation
+    downstream_export_policy: *default_export
+
+  plotly:
+    tool_id: plotly
+    display_name: Plotly
+    category: F05_data_visualization
+    sub_category: interactive_visualization
+    role: conditional
+    status: optional
+    source_type: library
+    source_repository: plotly/plotly.py
+    source_url: "https://github.com/plotly/plotly.py"
+    license: MIT
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - exploratory interactive output
+      - stakeholder inspection
+    activation_triggers:
+      - interactive exploration is needed
+      - static publication figure is insufficient
+    inputs:
+      - source data
+    outputs:
+      - HTML
+      - JSON
+      - optional static export
+    artifact_contracts:
+      - figure spec
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - plotly
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: interactive_plotting
+    default_priority: 35
+    fallback_tools:
+      - altair
+      - matplotlib
+    conflicts_with: []
+    compatibility_notes:
+      - Exploratory by default unless promoted through figure validation.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - interactive artifact is used as reportable output
+    downstream_export_policy: *default_export
+
+  altair:
+    tool_id: altair
+    display_name: Altair
+    category: F05_data_visualization
+    sub_category: declarative_visualization
+    role: conditional
+    status: optional
+    source_type: library
+    source_repository: vega/altair
+    source_url: "https://github.com/vega/altair"
+    license: BSD-3-Clause
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - declarative chart specification
+      - interactive exploratory chart
+    activation_triggers:
+      - chart spec should be auditable as declarative JSON
+    inputs:
+      - data table
+      - Vega-Lite spec
+    outputs:
+      - chart spec
+      - rendered figure
+    artifact_contracts:
+      - figure spec
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - altair
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: interactive_plotting
+    default_priority: 40
+    fallback_tools:
+      - matplotlib
+    conflicts_with: []
+    compatibility_notes:
+      - Promote to reportable only after figure validation.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - transformations inside the chart spec affect reported values
+    downstream_export_policy: *default_export
+
+  graphviz:
+    tool_id: graphviz
+    display_name: Graphviz
+    category: F06_scientific_illustration_diagramming
+    sub_category: structural_graphs
+    role: primary
+    status: optional
+    source_type: cli
+    source_repository: graphviz/graphviz
+    source_url: "https://gitlab.com/graphviz/graphviz"
+    license: EPL-1.0
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - structural graphs
+      - workflow diagrams
+      - claim graph layouts
+    activation_triggers:
+      - graph or DAG structure must be rendered
+      - editable structural diagram is needed
+    inputs:
+      - DOT source
+      - graph data
+    outputs:
+      - SVG
+      - PNG
+      - DOT
+    artifact_contracts:
+      - figure spec
+      - claim graph
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - graphviz
+      system_packages:
+        - graphviz
+      external_services: []
+      credentials_required: []
+    overlap_group: diagramming
+    default_priority: 10
+    fallback_tools:
+      - svg
+      - drawio
+    conflicts_with: []
+    compatibility_notes:
+      - Structural graph only; exact data plots stay data-grounded.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: low
+      supply_chain_risk: medium
+    human_review_required_when:
+      - diagram encodes evidence relationships or claim dependencies
+    downstream_export_policy: *default_export
+
+  svg:
+    tool_id: svg
+    display_name: SVG
+    category: F06_scientific_illustration_diagramming
+    sub_category: editable_vector
+    role: primary
+    status: installed
+    source_type: manual_tool
+    source_repository: W3C SVG
+    source_url: "https://www.w3.org/TR/SVG2/"
+    license: standard
+    version_pin: ""
+    installation_mode: included_format
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - editable vector figures
+      - final conceptual asset source
+    activation_triggers:
+      - final conceptual illustration must remain editable
+    inputs:
+      - vector source
+    outputs:
+      - SVG
+    artifact_contracts:
+      - figure spec
+    permissions:
+      <<: *default_permissions
+      network_access: none
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: editable_vector
+    default_priority: 10
+    fallback_tools:
+      - drawio
+      - inkscape
+    conflicts_with: []
+    compatibility_notes:
+      - Final publication illustrations should retain editable source formats.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: low
+      supply_chain_risk: low
+    human_review_required_when:
+      - labels or mechanisms imply reportable claims
+    downstream_export_policy: *default_export
+
+  figma:
+    tool_id: figma
+    display_name: Figma
+    category: F06_scientific_illustration_diagramming
+    sub_category: design_tool
+    role: secondary
+    status: optional
+    source_type: cloud_service
+    source_repository: Figma
+    source_url: "https://www.figma.com/"
+    license: service_terms
+    version_pin: ""
+    installation_mode: explicit_user_account
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - editable conceptual design
+      - collaboration on diagrams
+    activation_triggers:
+      - team needs collaborative editable figure design
+    inputs:
+      - figure brief
+      - vector assets
+    outputs:
+      - editable design file
+      - export assets
+    artifact_contracts:
+      - figure spec
+    permissions:
+      <<: *default_permissions
+      network_access: required
+      filesystem_write_scope: exported_assets_only
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services:
+        - Figma
+      credentials_required:
+        - user_account
+    overlap_group: editable_vector
+    default_priority: 45
+    fallback_tools:
+      - svg
+      - drawio
+    conflicts_with: []
+    compatibility_notes:
+      - Do not store private design credentials in downstream exports.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: high
+      supply_chain_risk: medium
+    human_review_required_when:
+      - cloud-hosted design becomes final publication source
+    downstream_export_policy: *default_export
+
+  drawio:
+    tool_id: drawio
+    display_name: draw.io
+    category: F06_scientific_illustration_diagramming
+    sub_category: editable_diagram
+    role: secondary
+    status: optional
+    source_type: manual_tool
+    source_repository: jgraph/drawio
+    source_url: "https://github.com/jgraph/drawio"
+    license: Apache-2.0
+    version_pin: ""
+    installation_mode: user_desktop_or_web
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - editable diagrams
+      - workflow figures
+    activation_triggers:
+      - manually editable diagram source is preferred
+    inputs:
+      - diagram source
+    outputs:
+      - drawio XML
+      - SVG
+      - PNG
+    artifact_contracts:
+      - figure spec
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: editable_vector
+    default_priority: 25
+    fallback_tools:
+      - svg
+      - graphviz
+    conflicts_with: []
+    compatibility_notes:
+      - Keep editable diagram source alongside exported images.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - diagram claims scientific or investment relationships
+    downstream_export_policy: *default_export
+
+  inkscape:
+    tool_id: inkscape
+    display_name: Inkscape
+    category: F06_scientific_illustration_diagramming
+    sub_category: vector_editor
+    role: secondary
+    status: optional
+    source_type: cli
+    source_repository: inkscape/inkscape
+    source_url: "https://gitlab.com/inkscape/inkscape"
+    license: GPL-3.0
+    version_pin: ""
+    installation_mode: user_desktop_install
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - vector editing
+      - SVG export conversion
+    activation_triggers:
+      - final vector polishing or conversion is needed
+    inputs:
+      - SVG
+    outputs:
+      - edited SVG
+      - PDF
+      - PNG
+    artifact_contracts:
+      - figure spec
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages: []
+      system_packages:
+        - inkscape
+      external_services: []
+      credentials_required: []
+    overlap_group: editable_vector
+    default_priority: 35
+    fallback_tools:
+      - svg
+    conflicts_with: []
+    compatibility_notes:
+      - Optional desktop tool; never required for base exports.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - manual edits alter labels or evidence content
+    downstream_export_policy: *default_export
+
+  papervizagent:
+    tool_id: papervizagent
+    display_name: PaperVizAgent
+    category: F06_scientific_illustration_diagramming
+    sub_category: ai_illustration
+    role: conditional
+    status: experimental
+    source_type: external_skill
+    source_repository: google-research/papervizagent
+    source_url: "https://github.com/google-research/papervizagent"
+    license: Apache-2.0
+    version_pin: ""
+    installation_mode: external_checkout_only
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - graphical abstract exploration
+      - multi-candidate academic visuals
+      - critic refinement
+    activation_triggers:
+      - multi-candidate generation is useful
+      - reference-driven style or critic refinement is useful
+      - figure brief is conceptual or mixed with pre-rendered data panels
+    inputs:
+      - constrained PaperVizAgent input JSON
+      - figure brief
+    outputs:
+      - draft image candidates
+      - critique notes
+    artifact_contracts:
+      - figure spec
+      - PaperVizAgent input schema
+    permissions:
+      <<: *default_permissions
+      network_access: optional
+      filesystem_write_scope: outputs_figures_only
+      code_execution: true
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services:
+        - image_model_provider
+      credentials_required:
+        - provider_specific
+    overlap_group: ai_illustration
+    default_priority: 60
+    fallback_tools:
+      - svg
+      - graphviz
+    conflicts_with:
+      - matplotlib
+    compatibility_notes:
+      - Must never create exact quantitative marks.
+      - mode: plot must not be sent to PaperVizAgent.
+    risk_notes:
+      hallucination_risk: high
+      provenance_risk: high
+      reproducibility_risk: high
+      supply_chain_risk: medium
+    human_review_required_when:
+      - any AI-generated visual is considered for reportable use
+    downstream_export_policy: *default_export
+
+  livefigure:
+    tool_id: livefigure
+    display_name: LiveFigure
+    category: F06_scientific_illustration_diagramming
+    sub_category: ai_illustration
+    role: conditional
+    status: experimental
+    source_type: external_skill
+    source_repository: LiveFigure
+    source_url: "https://github.com/"
+    license: unknown
+    version_pin: ""
+    installation_mode: external_checkout_only
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - advanced illustration assistance
+    activation_triggers:
+      - advanced scientific illustration support is explicitly requested
+    inputs:
+      - figure brief
+    outputs:
+      - draft illustration assets
+    artifact_contracts:
+      - figure spec
+    permissions:
+      <<: *default_permissions
+      network_access: optional
+      code_execution: true
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services:
+        - provider_specific
+      credentials_required:
+        - provider_specific
+    overlap_group: ai_illustration
+    default_priority: 70
+    fallback_tools:
+      - papervizagent
+      - svg
+    conflicts_with: []
+    compatibility_notes:
+      - Draft illustration helper only; editable final assets required.
+    risk_notes:
+      hallucination_risk: high
+      provenance_risk: high
+      reproducibility_risk: high
+      supply_chain_risk: medium
+    human_review_required_when:
+      - generated illustration is used beyond draft exploration
+    downstream_export_policy: *default_export
+
+  autofigure_edit:
+    tool_id: autofigure_edit
+    display_name: AutoFigure-Edit
+    category: F06_scientific_illustration_diagramming
+    sub_category: ai_illustration_editing
+    role: conditional
+    status: experimental
+    source_type: external_skill
+    source_repository: AutoFigure-Edit
+    source_url: "https://github.com/"
+    license: unknown
+    version_pin: ""
+    installation_mode: external_checkout_only
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - figure editing assistance
+    activation_triggers:
+      - existing conceptual figure needs assisted revision
+    inputs:
+      - figure source
+      - revision instruction
+    outputs:
+      - edited draft
+    artifact_contracts:
+      - figure spec
+    permissions:
+      <<: *default_permissions
+      network_access: optional
+      code_execution: true
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services:
+        - provider_specific
+      credentials_required:
+        - provider_specific
+    overlap_group: ai_illustration
+    default_priority: 75
+    fallback_tools:
+      - svg
+      - inkscape
+    conflicts_with: []
+    compatibility_notes:
+      - Must not alter exact quantitative data panels except layout-safe resizing.
+    risk_notes:
+      hallucination_risk: high
+      provenance_risk: high
+      reproducibility_risk: high
+      supply_chain_risk: medium
+    human_review_required_when:
+      - edits touch labels, evidence, or quantitative panels
+    downstream_export_policy: *default_export
+
+  paperspine:
+    tool_id: paperspine
+    display_name: PaperSpine
+    category: F07_manuscript_publication
+    sub_category: argument_architecture
+    role: primary
+    status: optional
+    source_type: external_skill
+    source_repository: paperspine
+    source_url: "https://github.com/"
+    license: unknown
+    version_pin: ""
+    installation_mode: explicit_skill_install
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - ai_industry
+      - industrial_factor
+      - investment_due_diligence
+      - ai_method_paper
+    primary_tasks:
+      - manuscript argument architecture
+      - claim structure review
+    activation_triggers:
+      - manuscript argument or memo structure is being designed
+    inputs:
+      - claim graph
+      - evidence matrix
+    outputs:
+      - manuscript spine
+      - argument outline
+    artifact_contracts:
+      - claim graph
+      - evidence matrix
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: manuscript_planning
+    default_priority: 20
+    fallback_tools:
+      - markdown
+    conflicts_with: []
+    compatibility_notes:
+      - Structures argument; does not decide project conclusions.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - claim hierarchy affects manuscript conclusion
+    downstream_export_policy: *default_export
+
+  markdown:
+    tool_id: markdown
+    display_name: Markdown
+    category: F07_manuscript_publication
+    sub_category: plain_text_authoring
+    role: primary
+    status: installed
+    source_type: manual_tool
+    source_repository: CommonMark
+    source_url: "https://commonmark.org/"
+    license: standard
+    version_pin: ""
+    installation_mode: included_format
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - memos
+      - report drafts
+      - template documentation
+    activation_triggers:
+      - report or note can stay lightweight
+    inputs:
+      - text
+      - citations
+      - figure paths
+    outputs:
+      - markdown document
+    artifact_contracts:
+      - release contract
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: document_authoring
+    default_priority: 10
+    fallback_tools:
+      - quarto
+      - latex
+    conflicts_with: []
+    compatibility_notes:
+      - Default report and memo format.
+    risk_notes:
+      hallucination_risk: medium
+      provenance_risk: medium
+      reproducibility_risk: low
+      supply_chain_risk: low
+    human_review_required_when:
+      - text makes reportable claims
+    downstream_export_policy: *default_export
+
+  quarto:
+    tool_id: quarto
+    display_name: Quarto
+    category: F07_manuscript_publication
+    sub_category: reproducible_reporting
+    role: conditional
+    status: optional
+    source_type: cli
+    source_repository: quarto-dev/quarto-cli
+    source_url: "https://github.com/quarto-dev/quarto-cli"
+    license: GPL-2.0
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - one-command report regeneration
+      - reproducible manuscript outputs
+    activation_triggers:
+      - report needs one-command regeneration
+      - committed outputs must feed a manuscript
+    inputs:
+      - qmd
+      - outputs
+      - citations
+    outputs:
+      - HTML
+      - PDF
+      - DOCX
+    artifact_contracts:
+      - release contract
+    permissions:
+      <<: *default_permissions
+      network_access: optional
+      code_execution: true
+    dependencies:
+      python_packages:
+        - jupyter
+      system_packages:
+        - quarto
+      external_services: []
+      credentials_required: []
+    overlap_group: reproducible_reporting
+    default_priority: 30
+    fallback_tools:
+      - markdown
+      - pandoc
+    conflicts_with: []
+    compatibility_notes:
+      - Add only when reports need regeneration from committed outputs.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - report code executes analyses inline
+    downstream_export_policy: *default_export
+
+  pandoc:
+    tool_id: pandoc
+    display_name: Pandoc
+    category: F07_manuscript_publication
+    sub_category: document_conversion
+    role: secondary
+    status: optional
+    source_type: cli
+    source_repository: jgm/pandoc
+    source_url: "https://github.com/jgm/pandoc"
+    license: GPL-2.0
+    version_pin: ""
+    installation_mode: explicit_optional_dependency
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - document conversion
+    activation_triggers:
+      - report needs conversion between Markdown, DOCX, PDF, or LaTeX
+    inputs:
+      - source document
+    outputs:
+      - converted document
+    artifact_contracts:
+      - release contract
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages: []
+      system_packages:
+        - pandoc
+      external_services: []
+      credentials_required: []
+    overlap_group: document_conversion
+    default_priority: 35
+    fallback_tools:
+      - quarto
+    conflicts_with: []
+    compatibility_notes:
+      - Conversion only; source claims remain in project artifacts.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - conversion affects citations, equations, or figures
+    downstream_export_policy: *default_export
+
+  latex:
+    tool_id: latex
+    display_name: LaTeX
+    category: F07_manuscript_publication
+    sub_category: final_typesetting
+    role: conditional
+    status: optional
+    source_type: cli
+    source_repository: latex-project
+    source_url: "https://www.latex-project.org/"
+    license: LPPL
+    version_pin: ""
+    installation_mode: explicit_system_install
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - ai_method_paper
+    primary_tasks:
+      - complex typesetting
+      - journal-specific final production
+    activation_triggers:
+      - equations, journal templates, or final production require LaTeX
+    inputs:
+      - tex source
+      - bibliography
+      - figures
+    outputs:
+      - PDF
+      - auxiliary files
+    artifact_contracts:
+      - release contract
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages: []
+      system_packages:
+        - texlive
+      external_services: []
+      credentials_required: []
+    overlap_group: final_typesetting
+    default_priority: 35
+    fallback_tools:
+      - quarto
+      - markdown
+    conflicts_with: []
+    compatibility_notes:
+      - Conditional final production layer.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - journal submission or citation formatting is finalized
+    downstream_export_policy: *default_export
+
+  zotero_better_bibtex:
+    tool_id: zotero_better_bibtex
+    display_name: "Zotero Better BibTeX"
+    category: F07_manuscript_publication
+    sub_category: bibliography_export
+    role: secondary
+    status: optional
+    source_type: manual_tool
+    source_repository: retorquere/zotero-better-bibtex
+    source_url: "https://github.com/retorquere/zotero-better-bibtex"
+    license: AGPL-3.0
+    version_pin: ""
+    installation_mode: user_desktop_install
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - stable citation key export
+      - BibTeX generation
+    activation_triggers:
+      - manuscript needs stable BibTeX keys
+    inputs:
+      - Zotero collection
+    outputs:
+      - BibTeX
+      - CSL JSON
+    artifact_contracts:
+      - citation contract
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: bibliography_management
+    default_priority: 20
+    fallback_tools:
+      - zotero
+    conflicts_with: []
+    compatibility_notes:
+      - Do not commit restricted PDFs or local Zotero databases.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - citation keys enter final manuscript
+    downstream_export_policy: *default_export
+
+  latex_document_skill:
+    tool_id: latex_document_skill
+    display_name: "LaTeX Document Skill"
+    category: F07_manuscript_publication
+    sub_category: typesetting_skill
+    role: conditional
+    status: optional
+    source_type: external_skill
+    source_repository: latex_document_skill
+    source_url: "https://github.com/"
+    license: unknown
+    version_pin: ""
+    installation_mode: explicit_skill_install
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - ai_method_paper
+    primary_tasks:
+      - LaTeX document assembly support
+    activation_triggers:
+      - final LaTeX production needs specialized assistance
+    inputs:
+      - manuscript source
+    outputs:
+      - revised LaTeX
+    artifact_contracts:
+      - release contract
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: final_typesetting
+    default_priority: 45
+    fallback_tools:
+      - latex
+    conflicts_with: []
+    compatibility_notes:
+      - Enhancement profile only.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - revisions affect final manuscript meaning
+    downstream_export_policy: *default_export
+
+  latex_paper_skills:
+    tool_id: latex_paper_skills
+    display_name: "LaTeX Paper Skills"
+    category: F07_manuscript_publication
+    sub_category: paper_typesetting_skill
+    role: conditional
+    status: optional
+    source_type: external_skill
+    source_repository: latex_paper_skills
+    source_url: "https://github.com/"
+    license: unknown
+    version_pin: ""
+    installation_mode: explicit_skill_install
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - ai_method_paper
+    primary_tasks:
+      - paper-specific LaTeX support
+    activation_triggers:
+      - journal submission requires specialized LaTeX support
+    inputs:
+      - paper source
+    outputs:
+      - revised paper source
+    artifact_contracts:
+      - release contract
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: final_typesetting
+    default_priority: 50
+    fallback_tools:
+      - latex
+    conflicts_with: []
+    compatibility_notes:
+      - Enhancement profile only.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - submission source changes
+    downstream_export_policy: *default_export
+
+  nature_skills:
+    tool_id: nature_skills
+    display_name: "Nature Skills"
+    category: F07_manuscript_publication
+    sub_category: high_impact_profile
+    role: conditional
+    status: optional
+    source_type: external_skill
+    source_repository: nature_skills
+    source_url: "https://github.com/"
+    license: unknown
+    version_pin: ""
+    installation_mode: explicit_skill_install
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - ai_method_paper
+    primary_tasks:
+      - high-impact journal framing review
+    activation_triggers:
+      - project targets high-impact journal positioning
+    inputs:
+      - claim graph
+      - manuscript draft
+    outputs:
+      - review notes
+      - revision plan
+    artifact_contracts:
+      - release contract
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: high_impact_review
+    default_priority: 60
+    fallback_tools:
+      - academic_research_skills
+    conflicts_with: []
+    compatibility_notes:
+      - Conditional enhancement profile, not a project controller.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - framing changes reportable claims
+    downstream_export_policy: *default_export
+
+  nature_paper_skills:
+    tool_id: nature_paper_skills
+    display_name: "Nature Paper Skills"
+    category: F07_manuscript_publication
+    sub_category: high_impact_profile
+    role: conditional
+    status: optional
+    source_type: external_skill
+    source_repository: nature_paper_skills
+    source_url: "https://github.com/"
+    license: unknown
+    version_pin: ""
+    installation_mode: explicit_skill_install
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - ai_method_paper
+    primary_tasks:
+      - high-impact manuscript review
+    activation_triggers:
+      - project targets a Nature-family or similar high-impact journal
+    inputs:
+      - manuscript draft
+      - evidence matrix
+    outputs:
+      - reviewer-style notes
+    artifact_contracts:
+      - release contract
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: high_impact_review
+    default_priority: 65
+    fallback_tools:
+      - academic_research_skills
+    conflicts_with: []
+    compatibility_notes:
+      - Conditional enhancement profile, not a project controller.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - comments change paper claim structure
+    downstream_export_policy: *default_export
+
+  academic_research_skills:
+    tool_id: academic_research_skills
+    display_name: "Academic Research Skills"
+    category: F08_review_citation_release
+    sub_category: review_qa
+    role: primary
+    status: optional
+    source_type: external_skill
+    source_repository: K-Dense-AI/scientific-agent-skills
+    source_url: "https://github.com/K-Dense-AI/scientific-agent-skills"
+    license: upstream_specific
+    version_pin: ""
+    installation_mode: explicit_skill_install
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - review
+      - logic checking
+      - revision planning
+      - citation QA
+    activation_triggers:
+      - manuscript, report, or release needs independent review
+    inputs:
+      - draft
+      - evidence matrix
+    outputs:
+      - review notes
+      - revision checklist
+    artifact_contracts:
+      - release contract
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: review_qa
+    default_priority: 20
+    fallback_tools:
+      - citation_check_skill
+      - refchecker
+    conflicts_with: []
+    compatibility_notes:
+      - Review aid only; cannot certify scientific truth alone.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - review result gates a release
+    downstream_export_policy: *default_export
+
+  citation_check_skill:
+    tool_id: citation_check_skill
+    display_name: "Citation Check Skill"
+    category: F08_review_citation_release
+    sub_category: citation_metadata_checking
+    role: primary
+    status: optional
+    source_type: external_skill
+    source_repository: citation_check_skill
+    source_url: "https://github.com/"
+    license: unknown
+    version_pin: ""
+    installation_mode: explicit_skill_install
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - citation existence checking
+      - metadata checking
+    activation_triggers:
+      - bibliography is prepared for release or submission
+    inputs:
+      - bibliography
+      - manuscript citations
+    outputs:
+      - citation QA report
+    artifact_contracts:
+      - citation contract
+    permissions:
+      <<: *default_permissions
+      network_access: optional
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: citation_qa
+    default_priority: 20
+    fallback_tools:
+      - crossref_adapter
+      - refchecker
+    conflicts_with: []
+    compatibility_notes:
+      - Checks metadata and existence; does not validate scientific claims.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - citation mismatch remains after automated checks
+    downstream_export_policy: *default_export
+
+  refchecker:
+    tool_id: refchecker
+    display_name: RefChecker
+    category: F08_review_citation_release
+    sub_category: bibliography_consistency
+    role: primary
+    status: optional
+    source_type: external_skill
+    source_repository: refchecker
+    source_url: "https://github.com/"
+    license: unknown
+    version_pin: ""
+    installation_mode: explicit_install
+    default_scope: *local_scope
+    allowed_project_types: *all_project_types
+    primary_tasks:
+      - bibliography consistency checking
+      - reference list QA
+    activation_triggers:
+      - release or submission bibliography needs consistency check
+    inputs:
+      - bibliography
+      - manuscript
+    outputs:
+      - reference consistency report
+    artifact_contracts:
+      - citation contract
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: citation_qa
+    default_priority: 25
+    fallback_tools:
+      - citation_check_skill
+    conflicts_with: []
+    compatibility_notes:
+      - Bibliography consistency checker only.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - references are missing, duplicated, or ambiguous
+    downstream_export_policy: *default_export
+
+  nature_paper_skills_submission_audit:
+    tool_id: nature_paper_skills_submission_audit
+    display_name: "Nature Paper Skills Submission Audit"
+    category: F08_review_citation_release
+    sub_category: submission_audit
+    role: audit_only
+    status: optional
+    source_type: external_skill
+    source_repository: nature_paper_skills
+    source_url: "https://github.com/"
+    license: unknown
+    version_pin: ""
+    installation_mode: explicit_skill_install
+    default_scope: *local_scope
+    allowed_project_types:
+      - empirical_materials
+      - ai_method_paper
+    primary_tasks:
+      - submission readiness audit
+    activation_triggers:
+      - high-impact paper is near submission
+    inputs:
+      - manuscript
+      - figures
+      - checklist
+    outputs:
+      - submission audit notes
+    artifact_contracts:
+      - release contract
+    permissions: *default_permissions
+    dependencies:
+      python_packages: []
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: release_audit
+    default_priority: 70
+    fallback_tools:
+      - academic_research_skills
+    conflicts_with: []
+    compatibility_notes:
+      - Audit-only; cannot approve release without human review.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - all submission gates
+    downstream_export_policy: *default_export
+
+  official_source_verifier:
+    tool_id: official_source_verifier
+    display_name: "Official Source Verifier"
+    category: F09_industry_investment_intelligence
+    sub_category: source_verification
+    role: primary
+    status: installed
+    source_type: local_python
+    source_repository: Elwyn921/template-research
+    source_url: local
+    license: repository
+    version_pin: "0.1.0"
+    installation_mode: included
+    default_scope:
+      - foundry
+      - industry_program
+      - research_os
+    allowed_project_types:
+      - ai_industry
+      - industrial_factor
+      - investment_due_diligence
+    primary_tasks:
+      - source tier assignment
+      - official source checks
+    activation_triggers:
+      - industry or investment evidence is collected
+    inputs:
+      - source URL
+      - source metadata
+    outputs:
+      - source tier
+      - caveat notes
+    artifact_contracts:
+      - industry evidence contract
+      - source registry
+    permissions:
+      <<: *default_permissions
+      network_access: optional
+      code_execution: true
+    dependencies:
+      python_packages:
+        - pyyaml
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: industry_source_qa
+    default_priority: 10
+    fallback_tools:
+      - tavily_mcp
+    conflicts_with: []
+    compatibility_notes:
+      - Verifies source tier; does not certify company claims.
+    risk_notes:
+      hallucination_risk: low
+      provenance_risk: medium
+      reproducibility_risk: medium
+      supply_chain_risk: low
+    human_review_required_when:
+      - source tier is not official or primary
+    downstream_export_policy: *default_export
+
+  entity_registry_builder:
+    tool_id: entity_registry_builder
+    display_name: "Entity Registry Builder"
+    category: F09_industry_investment_intelligence
+    sub_category: entity_resolution
+    role: primary
+    status: installed
+    source_type: local_python
+    source_repository: Elwyn921/template-research
+    source_url: local
+    license: repository
+    version_pin: "0.1.0"
+    installation_mode: included
+    default_scope:
+      - foundry
+      - industry_program
+      - research_os
+    allowed_project_types:
+      - ai_industry
+      - industrial_factor
+      - investment_due_diligence
+    primary_tasks:
+      - entity registry creation
+      - company/sector/region linkage
+    activation_triggers:
+      - multiple companies, sectors, regions, or instruments are tracked
+    inputs:
+      - entity records
+    outputs:
+      - entity registry
+    artifact_contracts:
+      - entity_registry.schema.yaml
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - pyyaml
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: industry_structuring
+    default_priority: 10
+    fallback_tools: []
+    conflicts_with: []
+    compatibility_notes:
+      - Track stable entity IDs before event or thesis ledgers.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - entity aliases or corporate relationships are ambiguous
+    downstream_export_policy: *default_export
+
+  event_ledger_builder:
+    tool_id: event_ledger_builder
+    display_name: "Event Ledger Builder"
+    category: F09_industry_investment_intelligence
+    sub_category: event_tracking
+    role: primary
+    status: installed
+    source_type: local_python
+    source_repository: Elwyn921/template-research
+    source_url: local
+    license: repository
+    version_pin: "0.1.0"
+    installation_mode: included
+    default_scope:
+      - foundry
+      - industry_program
+      - research_os
+    allowed_project_types:
+      - ai_industry
+      - industrial_factor
+      - investment_due_diligence
+    primary_tasks:
+      - event ledger creation
+      - event/disclosure/as-of date tracking
+    activation_triggers:
+      - time-stamped industry evidence is collected
+    inputs:
+      - event records
+      - source IDs
+    outputs:
+      - event ledger
+    artifact_contracts:
+      - event_ledger.schema.yaml
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - pyyaml
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: industry_structuring
+    default_priority: 12
+    fallback_tools: []
+    conflicts_with: []
+    compatibility_notes:
+      - Must preserve event_date, disclosure_date, as_of_date, source_tier, and confidence.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - event date or disclosure date is uncertain
+    downstream_export_policy: *default_export
+
+  company_timeline_builder:
+    tool_id: company_timeline_builder
+    display_name: "Company Timeline Builder"
+    category: F09_industry_investment_intelligence
+    sub_category: company_analysis
+    role: secondary
+    status: installed
+    source_type: local_python
+    source_repository: Elwyn921/template-research
+    source_url: local
+    license: repository
+    version_pin: "0.1.0"
+    installation_mode: included
+    default_scope:
+      - foundry
+      - industry_program
+      - research_os
+    allowed_project_types:
+      - ai_industry
+      - investment_due_diligence
+    primary_tasks:
+      - company timeline construction
+    activation_triggers:
+      - company diligence requires event chronology
+    inputs:
+      - event ledger
+      - entity registry
+    outputs:
+      - company timeline
+    artifact_contracts:
+      - event_ledger.schema.yaml
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - pandas
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: industry_structuring
+    default_priority: 20
+    fallback_tools:
+      - event_ledger_builder
+    conflicts_with: []
+    compatibility_notes:
+      - Timeline is an evidence view, not a valuation conclusion.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - timeline supports investment decision
+    downstream_export_policy: *default_export
+
+  thesis_ledger_builder:
+    tool_id: thesis_ledger_builder
+    display_name: "Thesis Ledger Builder"
+    category: F09_industry_investment_intelligence
+    sub_category: thesis_tracking
+    role: primary
+    status: installed
+    source_type: local_python
+    source_repository: Elwyn921/template-research
+    source_url: local
+    license: repository
+    version_pin: "0.1.0"
+    installation_mode: included
+    default_scope:
+      - foundry
+      - industry_program
+      - research_os
+    allowed_project_types:
+      - ai_industry
+      - investment_due_diligence
+    primary_tasks:
+      - investment thesis evidence tracking
+    activation_triggers:
+      - investment memo or industry thesis is drafted
+    inputs:
+      - thesis card
+      - evidence links
+    outputs:
+      - thesis ledger
+    artifact_contracts:
+      - thesis_ledger.schema.yaml
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - pyyaml
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: industry_thesis
+    default_priority: 10
+    fallback_tools: []
+    conflicts_with: []
+    compatibility_notes:
+      - Must protect against look-ahead bias and unsupported valuation assumptions.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - thesis supports investment or strategy recommendation
+    downstream_export_policy: *default_export
+
+  comparable_company_builder:
+    tool_id: comparable_company_builder
+    display_name: "Comparable Company Builder"
+    category: F09_industry_investment_intelligence
+    sub_category: comparable_analysis
+    role: secondary
+    status: installed
+    source_type: local_python
+    source_repository: Elwyn921/template-research
+    source_url: local
+    license: repository
+    version_pin: "0.1.0"
+    installation_mode: included
+    default_scope:
+      - foundry
+      - industry_program
+      - research_os
+    allowed_project_types:
+      - ai_industry
+      - investment_due_diligence
+    primary_tasks:
+      - comparable company set construction
+    activation_triggers:
+      - due diligence needs peer set tracking
+    inputs:
+      - entity registry
+      - comparability criteria
+    outputs:
+      - comparable company table
+    artifact_contracts:
+      - entity_registry.schema.yaml
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - pandas
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: valuation_support
+    default_priority: 20
+    fallback_tools:
+      - entity_registry_builder
+    conflicts_with: []
+    compatibility_notes:
+      - Comparable selection criteria must be recorded.
+    risk_notes: *default_risks
+    human_review_required_when:
+      - peer set affects valuation or investment memo
+    downstream_export_policy: *default_export
+
+  valuation_assumption_audit:
+    tool_id: valuation_assumption_audit
+    display_name: "Valuation Assumption Audit"
+    category: F09_industry_investment_intelligence
+    sub_category: valuation_review
+    role: audit_only
+    status: installed
+    source_type: local_python
+    source_repository: Elwyn921/template-research
+    source_url: local
+    license: repository
+    version_pin: "0.1.0"
+    installation_mode: included
+    default_scope:
+      - foundry
+      - industry_program
+      - research_os
+    allowed_project_types:
+      - investment_due_diligence
+      - ai_industry
+    primary_tasks:
+      - valuation assumption caveat tracking
+      - unsupported assumption detection
+    activation_triggers:
+      - investment memo includes valuation, multiples, scenarios, or assumptions
+    inputs:
+      - thesis ledger
+      - comparable table
+      - assumption list
+    outputs:
+      - assumption audit
+    artifact_contracts:
+      - thesis_ledger.schema.yaml
+      - industry_evidence_contract
+    permissions:
+      <<: *default_permissions
+      network_access: none
+      code_execution: true
+    dependencies:
+      python_packages:
+        - pyyaml
+      system_packages: []
+      external_services: []
+      credentials_required: []
+    overlap_group: valuation_support
+    default_priority: 30
+    fallback_tools:
+      - thesis_ledger_builder
+    conflicts_with: []
+    compatibility_notes:
+      - Audit assumptions only; does not issue investment recommendations.
+    risk_notes:
+      hallucination_risk: medium
+      provenance_risk: high
+      reproducibility_risk: medium
+      supply_chain_risk: low
+    human_review_required_when:
+      - any valuation claim remains unsupported or source-limited
+    downstream_export_policy: *default_export

@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 .venv/
+uv.lock
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
@@ -19,17 +20,17 @@ __pycache__/
 .env.*
 !.env.example
 
-# Data: commit only small, documented samples
-data/raw/**
-data/external/**
-data/interim/**
-data/processed/**
-!data/**/.gitkeep
-!data/sample/**
+# Example project data: commit only small, documented samples
+examples/research_os_project/data/raw/**
+examples/research_os_project/data/external/**
+examples/research_os_project/data/interim/**
+examples/research_os_project/data/processed/**
+!examples/research_os_project/data/**/.gitkeep
+!examples/research_os_project/data/sample/**
 
 # Generated artifacts
-outputs/**
-!outputs/**/.gitkeep
+examples/research_os_project/outputs/**
+!examples/research_os_project/outputs/**/.gitkeep
 
 # DVC local configuration/cache
 auto_generated/

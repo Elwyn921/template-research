@@ -1,0 +1,10 @@
+schema_id: thesis_ledger
+required_fields:
+  - thesis_id
+  - entity_ids
+  - claim
+  - evidence_ids
+  - assumptions
+  - counterevidence
+  - confidence
+  - review_status

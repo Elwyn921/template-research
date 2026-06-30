@@ -1,0 +1,346 @@
+schema_version: "1.0"
+purpose: "Canonical Research Foundry profile registry. Profiles combine packs and tools; they are not workflow controllers."
+
+profile_rules:
+  base_profiles:
+    - base_research
+  max_domain_profiles: 1
+  max_enhancement_profiles: 2
+  conflict_resolution:
+    - project_toolflow_wins
+    - tool_default_priority_wins
+    - human_selection_required
+
+profiles:
+  base_research:
+    profile_id: base_research
+    profile_type: base
+    description: "Minimal reusable ResearchOS capability layer."
+    valid_project_types:
+      - empirical_materials
+      - ai_industry
+      - industrial_factor
+      - investment_due_diligence
+      - ai_method_paper
+    activation_triggers:
+      - any downstream project export
+    recommended_packs:
+      - core_research_os
+    default_tools:
+      - python
+      - pandas
+      - evidence_matrix_builder
+      - matplotlib
+      - markdown
+    conditional_tools:
+      - paper_search_mcp
+      - zotero
+      - zotero_mcp
+      - quarto
+    prohibited_tools: []
+    required_artifacts:
+      - evidence_matrix
+      - dataset_inventory
+      - claim_graph
+      - run_manifest
+      - result_ledger
+      - figure_spec
+    required_validators:
+      - validate_evidence
+      - validate_dataset_inventory
+      - validate_claim_graph
+      - validate_figure_assets
+      - validate_release
+    known_risks:
+      - "Base profile is intentionally light and may need a domain profile for specialized work."
+
+  concrete_ml:
+    profile_id: concrete_ml
+    profile_type: domain
+    description: "Concrete/materials ML and XAI profile."
+    valid_project_types:
+      - empirical_materials
+      - ai_method_paper
+    activation_triggers:
+      - concrete/materials data modeling
+      - prediction diagnostics
+      - SHAP or XAI interpretation
+    recommended_packs:
+      - core_research_os
+      - concrete_ml
+    default_tools:
+      - pandas
+      - scikit_learn
+      - statsmodels
+      - scipy
+      - shap
+      - matplotlib
+    conditional_tools:
+      - mlflow
+      - dvc
+      - optuna
+      - duckdb
+      - parquet
+      - shap_plotting
+      - paperqa2
+    prohibited_tools:
+      - tavily_mcp
+      - valuation_assumption_audit
+    required_artifacts:
+      - experiment_plan
+      - run_manifest
+      - result_ledger
+      - figure_spec
+    required_validators:
+      - validate_experiment_plan
+      - validate_run_manifest
+      - validate_figure_assets
+    known_risks:
+      - "Metrics must be split-aware and leakage-controlled."
+      - "SHAP explanations must not be overstated as causal mechanisms."
+
+  ai_industry_research:
+    profile_id: ai_industry_research
+    profile_type: domain
+    description: "AI industry research profile for company, sector, policy, and web evidence."
+    valid_project_types:
+      - ai_industry
+      - investment_due_diligence
+      - industrial_factor
+    activation_triggers:
+      - company, sector, region, policy, or commercial evidence research
+    recommended_packs:
+      - core_research_os
+      - ai_industry_research
+    default_tools:
+      - tavily_mcp
+      - official_source_verifier
+      - entity_registry_builder
+      - event_ledger_builder
+      - company_timeline_builder
+      - markdown
+    conditional_tools:
+      - zotero
+      - paper_search_mcp
+      - statsmodels
+      - duckdb
+      - parquet
+      - plotly
+    prohibited_tools:
+      - papervizagent
+    required_artifacts:
+      - entity_registry
+      - event_ledger
+      - metric_registry
+    required_validators:
+      - validate_industry_thesis
+      - validate_release
+    known_risks:
+      - "Protect against look-ahead bias, marketing-source overreliance, and unsupported company claims."
+
+  industrial_factor_mining:
+    profile_id: industrial_factor_mining
+    profile_type: domain
+    description: "Industrial factor mining and statistical validation profile."
+    valid_project_types:
+      - industrial_factor
+      - ai_industry
+      - investment_due_diligence
+    activation_triggers:
+      - factor construction
+      - rolling statistics
+      - leakage controls
+      - validation splits
+    recommended_packs:
+      - core_research_os
+      - industrial_factor_mining
+    default_tools:
+      - pandas
+      - duckdb
+      - parquet
+      - statsmodels
+      - scipy
+      - matplotlib
+    conditional_tools:
+      - scikit_learn
+      - mlflow
+      - dvc
+      - optuna
+      - tavily_mcp
+      - plotly
+    prohibited_tools:
+      - papervizagent
+    required_artifacts:
+      - metric_registry
+      - run_manifest
+      - result_ledger
+      - figure_spec
+    required_validators:
+      - validate_run_manifest
+      - validate_figure_assets
+      - validate_release
+    known_risks:
+      - "Time windows, refresh cadence, leakage controls, and downstream decisions must be explicit."
+
+  advanced_figure:
+    profile_id: advanced_figure
+    profile_type: enhancement
+    description: "Advanced data, conceptual, and mixed figure profile."
+    valid_project_types:
+      - empirical_materials
+      - ai_industry
+      - industrial_factor
+      - investment_due_diligence
+      - ai_method_paper
+    activation_triggers:
+      - reportable figures need strict data/concept separation
+      - conceptual or mixed figures are required
+    recommended_packs:
+      - advanced_figure
+    default_tools:
+      - matplotlib
+      - graphviz
+      - svg
+    conditional_tools:
+      - seaborn
+      - plotly
+      - altair
+      - shap_plotting
+      - papervizagent
+      - livefigure
+      - autofigure_edit
+      - drawio
+      - inkscape
+    prohibited_tools: []
+    required_artifacts:
+      - figure_spec
+    required_validators:
+      - validate_figure_assets
+    known_risks:
+      - "AI illustration tools are draft-only and must not fabricate quantitative evidence."
+
+  high_impact_journal:
+    profile_id: high_impact_journal
+    profile_type: enhancement
+    description: "High-impact journal preparation profile."
+    valid_project_types:
+      - empirical_materials
+      - ai_method_paper
+    activation_triggers:
+      - high-impact submission target
+      - manuscript logic, figure, and release audit need elevated scrutiny
+    recommended_packs:
+      - high_impact_journal
+    default_tools:
+      - paperspine
+      - academic_research_skills
+      - citation_check_skill
+      - refchecker
+      - markdown
+    conditional_tools:
+      - nature_skills
+      - nature_paper_skills
+      - nature_paper_skills_submission_audit
+      - quarto
+      - latex
+      - zotero_better_bibtex
+    prohibited_tools:
+      - valuation_assumption_audit
+    required_artifacts:
+      - claim_graph
+      - evidence_matrix
+      - release_checklist
+    required_validators:
+      - validate_evidence
+      - validate_claim_graph
+      - validate_release
+    known_risks:
+      - "Enhancement profile cannot change project conclusions without evidence."
+
+  ai_method_paper:
+    profile_id: ai_method_paper
+    profile_type: domain
+    description: "AI method paper profile for experiments, evidence tracing, figures, and manuscript architecture."
+    valid_project_types:
+      - ai_method_paper
+      - empirical_materials
+    activation_triggers:
+      - project develops or evaluates an AI method
+    recommended_packs:
+      - core_research_os
+      - ai_method_paper
+    default_tools:
+      - scikit_learn
+      - statsmodels
+      - scipy
+      - matplotlib
+      - paperspine
+      - academic_research_skills
+    conditional_tools:
+      - paperqa2
+      - mlflow
+      - dvc
+      - optuna
+      - latex
+      - quarto
+      - nature_paper_skills
+    prohibited_tools:
+      - valuation_assumption_audit
+    required_artifacts:
+      - experiment_plan
+      - run_manifest
+      - result_ledger
+      - claim_graph
+      - figure_spec
+    required_validators:
+      - validate_experiment_plan
+      - validate_run_manifest
+      - validate_claim_graph
+      - validate_figure_assets
+      - validate_release
+    known_risks:
+      - "Method comparison must preserve baseline definitions, splits, and uncertainty."
+
+  investment_due_diligence:
+    profile_id: investment_due_diligence
+    profile_type: domain
+    description: "Investment due diligence profile for thesis ledgers, company evidence, and assumption audits."
+    valid_project_types:
+      - investment_due_diligence
+      - ai_industry
+    activation_triggers:
+      - investment memo
+      - company diligence
+      - valuation assumption audit
+    recommended_packs:
+      - core_research_os
+      - ai_industry_research
+      - investment_due_diligence
+    default_tools:
+      - tavily_mcp
+      - official_source_verifier
+      - entity_registry_builder
+      - event_ledger_builder
+      - thesis_ledger_builder
+      - comparable_company_builder
+      - valuation_assumption_audit
+      - markdown
+    conditional_tools:
+      - statsmodels
+      - duckdb
+      - parquet
+      - plotly
+      - quarto
+    prohibited_tools:
+      - nature_paper_skills
+      - papervizagent
+    required_artifacts:
+      - entity_registry
+      - event_ledger
+      - thesis_ledger
+      - investment_memo
+    required_validators:
+      - validate_industry_thesis
+      - validate_release
+    known_risks:
+      - "Protect against look-ahead bias, unverified company claims, and unsupported valuation assumptions."

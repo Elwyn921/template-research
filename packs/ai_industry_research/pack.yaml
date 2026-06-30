@@ -1,0 +1,42 @@
+name: ai_industry_research
+version: "0.1.0"
+scope: domain_pack
+description: "AI industry source, entity, event, and evidence tracking capabilities."
+project_types:
+  - ai_industry
+  - investment_due_diligence
+  - industrial_factor
+activation_triggers:
+  - AI company, sector, policy, market, or web evidence research
+required_tool_ids:
+  - tavily_mcp
+  - official_source_verifier
+  - entity_registry_builder
+  - event_ledger_builder
+  - company_timeline_builder
+  - markdown
+optional_tool_ids:
+  - zotero
+  - paper_search_mcp
+  - statsmodels
+  - duckdb
+  - parquet
+  - thesis_ledger_builder
+required_artifacts:
+  - entity_registry
+  - event_ledger
+  - metric_registry
+  - source_registry
+required_validators:
+  - validate_industry_thesis
+  - validate_release
+compatibility:
+  requires:
+    - core_research_os
+  compatible_with:
+    - investment_due_diligence
+    - industrial_factor_mining
+    - advanced_figure
+conflicts: []
+export_paths:
+  - packs/ai_industry_research

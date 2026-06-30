@@ -1,0 +1,29 @@
+adapter_id: duckdb
+tool_id: duckdb
+status: optional
+supported_packs:
+  - core_research_os
+  - industrial_factor_mining
+activation_conditions:
+  - structured SQL layer is justified
+inputs:
+  - CSV
+  - Parquet
+  - SQL
+outputs:
+  - query results
+  - processed generated tables
+read_permissions:
+  - declared data paths
+write_permissions:
+  - processed generated tables
+network_requirements: []
+credential_requirements: []
+installation_steps:
+  - Install the optional DuckDB dependency explicitly.
+fallbacks:
+  - pandas
+overlap_warnings:
+  - Do not use DuckDB when pandas is sufficient.
+security_notes:
+  - Keep raw data immutable and processed data code-generated.

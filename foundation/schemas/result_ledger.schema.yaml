@@ -1,0 +1,9 @@
+schema_id: result_ledger
+required_fields:
+  - result_id
+  - run_id
+  - metric_or_output
+  - value
+  - unit
+  - split
+  - caveats

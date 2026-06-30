@@ -1,0 +1,44 @@
+name: high_impact_journal
+version: "0.1.0"
+scope: enhancement_pack
+description: "High-impact journal review, citation, figure, and release capabilities."
+project_types:
+  - empirical_materials
+  - ai_method_paper
+activation_triggers:
+  - high-impact journal targeting
+  - submission audit
+required_tool_ids:
+  - paperspine
+  - academic_research_skills
+  - citation_check_skill
+  - refchecker
+  - markdown
+optional_tool_ids:
+  - nature_skills
+  - nature_paper_skills
+  - nature_paper_skills_submission_audit
+  - quarto
+  - latex
+  - zotero_better_bibtex
+required_artifacts:
+  - claim_graph
+  - evidence_matrix
+  - figure_spec
+  - release_checklist
+required_validators:
+  - validate_evidence
+  - validate_claim_graph
+  - validate_figure_assets
+  - validate_release
+compatibility:
+  requires:
+    - core_research_os
+  compatible_with:
+    - advanced_figure
+    - concrete_ml
+    - ai_method_paper
+conflicts:
+  - investment_due_diligence
+export_paths:
+  - packs/high_impact_journal

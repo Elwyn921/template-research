@@ -1,0 +1,10 @@
+schema_id: run_manifest
+required_fields:
+  - run_id
+  - experiment_id
+  - command
+  - code_version
+  - config_paths
+  - input_artifacts
+  - output_artifacts
+  - generated_at

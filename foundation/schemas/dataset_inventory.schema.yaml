@@ -1,0 +1,13 @@
+schema_id: dataset_inventory
+required_fields:
+  - dataset_id
+  - name
+  - version
+  - stage
+  - source_ids
+  - storage_path
+  - created_at
+  - rows
+  - columns
+  - sensitivity
+  - quality_status

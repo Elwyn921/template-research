@@ -1,0 +1,28 @@
+adapter_id: quarto
+tool_id: quarto
+status: optional
+supported_packs:
+  - core_research_os
+  - high_impact_journal
+activation_conditions:
+  - report needs one-command regeneration
+inputs:
+  - qmd source
+  - generated outputs
+outputs:
+  - rendered report
+read_permissions:
+  - report source and outputs
+write_permissions:
+  - generated report outputs
+network_requirements: []
+credential_requirements: []
+installation_steps:
+  - Install Quarto outside the base Foundry environment when needed.
+fallbacks:
+  - markdown
+  - pandoc
+overlap_warnings:
+  - Keep analysis logic in scripts when possible.
+security_notes:
+  - Do not hide private data or credentials in report execution.

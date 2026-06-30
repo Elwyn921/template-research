@@ -1,30 +1,23 @@
 from __future__ import annotations
 
-import csv
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+from research_foundry.validation import validate_foundry
 
 
-def read_csv(path: Path) -> list[dict[str, str]]:
-    with path.open(encoding="utf-8", newline="") as handle:
-        return list(csv.DictReader(handle))
-
-
-def main() -> None:
-    sources = read_csv(ROOT / "metadata" / "source_registry.csv")
-    datasets = read_csv(ROOT / "metadata" / "data_manifest.csv")
-    source_ids = {row["source_id"] for row in sources if row.get("source_id")}
-    errors = []
-    for dataset in datasets:
-        refs = [item.strip() for item in dataset.get("source_ids", "").split(";") if item.strip()]
-        unknown = set(refs) - source_ids
-        if unknown:
-            errors.append(f"{dataset['dataset_id']}: unknown source IDs {sorted(unknown)}")
+def main() -> int:
+    errors = validate_foundry()
     if errors:
-        raise SystemExit("Registry audit failed:\n- " + "\n- ".join(errors))
-    print(f"Registry audit passed: {len(sources)} source(s), {len(datasets)} dataset(s).")
+        for error in errors:
+            print(f"ERROR: {error}")
+        return 1
+    print("Compatibility registry audit passed via scripts/validate_foundry.py.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

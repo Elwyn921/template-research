@@ -1,0 +1,9 @@
+experiment_id: EXP-YYYYMMDD-001
+question: ""
+dataset_id: ""
+split_strategy: ""
+method: ""
+baseline: ""
+metrics: []
+success_criteria: []
+risks: []

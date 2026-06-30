@@ -1,0 +1,14 @@
+schema_id: tool_manifest
+required_fields:
+  - tool_id
+  - display_name
+  - category
+  - role
+  - status
+  - source_type
+  - primary_tasks
+  - activation_triggers
+  - inputs
+  - outputs
+  - dependencies
+  - downstream_export_policy

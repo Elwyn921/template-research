@@ -1,0 +1,30 @@
+adapter_id: paper_search
+tool_id: paper_search_mcp
+status: optional
+supported_packs:
+  - core_research_os
+  - ai_method_paper
+activation_conditions:
+  - external academic discovery is needed
+inputs:
+  - query
+  - domain constraints
+outputs:
+  - candidate paper metadata
+read_permissions:
+  - public academic metadata
+write_permissions:
+  - source candidate notes
+network_requirements:
+  - required MCP service access
+credential_requirements: []
+installation_steps:
+  - Configure the MCP server outside the repository.
+fallbacks:
+  - openalex_adapter
+  - crossref_adapter
+  - semantic_scholar_adapter
+overlap_warnings:
+  - Use one primary discovery route, then metadata fallbacks.
+security_notes:
+  - Do not store service credentials in exports.

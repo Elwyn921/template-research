@@ -1,0 +1,52 @@
+id: FIG-EXAMPLE-CONCRETE-AI-WORKFLOW
+title: "Concrete AI research workflow"
+figure_type: graphical-abstract
+mode: image
+aspect_ratio: "16:9"
+paper_claim: "A concrete materials prediction study should connect source data, mix-design features, model validation, explainable AI, and decision support."
+figure_goal: "Create a publication-style graphical abstract showing the research evidence chain without inventing performance values or material mechanisms."
+audience: "materials science, civil engineering, and applied AI readers"
+caption: "AI-native concrete materials prediction workflow with explainable model interpretation."
+panels:
+  - name: "Data source"
+    purpose: "Show where evidence enters the study."
+    content: "Curated concrete mix-design datasets with source registry and dataset manifest."
+  - name: "Feature construction"
+    purpose: "Show material variables used by the model."
+    content: "Water-binder ratio, cementitious materials, aggregate proportions, admixtures, age, curing or testing conditions when available."
+  - name: "ML prediction"
+    purpose: "Show the predictive modeling step."
+    content: "Train/validation split, machine learning model, prediction target, and diagnostic outputs."
+  - name: "SHAP / XAI"
+    purpose: "Show interpretation, not just prediction."
+    content: "Feature attribution and sensitivity patterns tied back to material variables."
+  - name: "Decision support"
+    purpose: "Show the research decision supported by the workflow."
+    content: "Candidate mix screening, uncertainty or limitation note, and next experiment or analysis."
+must_keep_labels:
+  - "Data source"
+  - "Mix design"
+  - "ML prediction"
+  - "SHAP / XAI"
+  - "Decision support"
+forbidden_content:
+  - "unsupported accuracy values"
+  - "invented concrete mechanisms"
+  - "fake benchmark numbers"
+  - "unverified sustainability claims"
+  - "company or market claims"
+style_constraints:
+  - "white or very light background"
+  - "left-to-right evidence flow"
+  - "short readable labels"
+  - "publication style"
+  - "no title text inside the image"
+source_paths:
+  - "FOUNDATIONS.md"
+  - "foundation/contracts/research_integrity.md"
+  - "foundation/contracts/figure_contract.md"
+verification_checklist:
+  - "All required labels are present exactly."
+  - "No numerical performance value is invented."
+  - "No material mechanism is shown unless it is source-grounded."
+  - "The figure communicates a reusable workflow, not a final downstream result."

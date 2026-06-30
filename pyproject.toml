@@ -3,9 +3,9 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "research-project"
+name = "research-foundry"
 version = "0.1.0"
-description = "Reproducible research project"
+description = "Research Foundry for reusable ResearchOS capability packs and Tool Fabric registries"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -41,7 +41,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/research_project"]
+packages = ["src/research_foundry"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
@@ -51,11 +51,21 @@ addopts = "-q"
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-exclude = ["notebooks", "data", "outputs"]
+exclude = [
+  "examples/research_os_project/notebooks",
+  "examples/research_os_project/data",
+  "examples/research_os_project/outputs",
+  "legacy",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"foundation/validators/*.py" = ["E402"]
+"scripts/*.py" = ["E402"]
+"tool_fabric/resolvers/*.py" = ["E402"]
 
 [tool.ruff.format]
 quote-style = "double"

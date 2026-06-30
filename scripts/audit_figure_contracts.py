@@ -8,7 +8,7 @@ from typing import Any
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-BRIEF_DIR = ROOT / "reports" / "paper" / "figures" / "briefs"
+BRIEF_DIR = ROOT / "examples" / "research_os_project" / "reports" / "paper" / "figures" / "briefs"
 ALLOWED_MODES = {"image", "plot", "mixed"}
 REQUIRED_BRIEF_FIELDS = {
     "id",
@@ -25,26 +25,24 @@ REQUIRED_BRIEF_FIELDS = {
 }
 ROOT_CONTRACT_MARKERS = {
     "AGENTS.md": [
-        "Figure Hard Gates",
-        "Image generation and PaperVizAgent must not create exact quantitative marks.",
-        "mode: plot",
-        "make figures-audit",
+        "Research Foundry",
+        "tool_fabric/",
+        "No nested AGENTS.md",
     ],
-    "RESEARCH.md": [
-        "image generation or PaperVizAgent",
-        "data-grounded",
-        "registered experiment",
+    "FOUNDATIONS.md": [
+        "Research Foundry",
+        "versioned capability export",
+        "Tool Fabric",
     ],
-    "FIGURE_GENERATION_CONTRACT.md": [
-        "Non-Negotiable Figure Gates",
-        "Exact quantitative content must come from source data",
-        "mode: plot",
-        "make figures-audit",
+    "foundation/contracts/figure_contract.md": [
+        "canonical Foundry figure standard",
+        "Exact numeric values",
+        "AI illustration tools may assist",
     ],
-    "TOOL_MODULES.md": [
-        "Hard gate for agents",
-        "`mode: plot` cannot be sent",
-        "make figures-audit",
+    "tool_fabric/registry/tools.yaml": [
+        "matplotlib",
+        "papervizagent",
+        "shap_plotting",
     ],
 }
 DATA_PATH_HINTS = (

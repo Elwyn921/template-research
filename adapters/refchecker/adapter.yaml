@@ -1,0 +1,27 @@
+adapter_id: refchecker
+tool_id: refchecker
+status: optional
+supported_packs:
+  - core_research_os
+  - high_impact_journal
+activation_conditions:
+  - bibliography consistency checking is needed
+inputs:
+  - bibliography
+  - manuscript
+outputs:
+  - reference consistency report
+read_permissions:
+  - bibliography and manuscript
+write_permissions:
+  - reference check report
+network_requirements: []
+credential_requirements: []
+installation_steps:
+  - Enable explicitly before release or submission checks.
+fallbacks:
+  - citation_check_skill
+overlap_warnings:
+  - Bibliography consistency is separate from evidence support.
+security_notes:
+  - Do not expose restricted manuscripts without approval.

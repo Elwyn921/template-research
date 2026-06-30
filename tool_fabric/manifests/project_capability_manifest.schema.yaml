@@ -1,0 +1,33 @@
+schema_id: project_capability_manifest
+required_fields:
+  - foundry
+  - project
+  - profiles
+  - packs
+  - resolved_tools
+  - local_overrides
+  - notes
+example:
+  foundry:
+    repository: Elwyn921/template-research
+    release: v0.1.0-foundry
+    exported_at: "2026-06-30"
+  project:
+    type: empirical_materials
+    target: JBE
+  profiles:
+    - base_research
+    - concrete_ml
+    - advanced_figure
+  packs:
+    - core_research_os
+    - concrete_ml
+    - advanced_figure
+  resolved_tools:
+    primary: {}
+    conditional: []
+  local_overrides: []
+  notes:
+    - "This manifest records selected capabilities and provenance."
+    - "It is not a project controller."
+    - "Downstream AGENTS.md and TOOLFLOW.md remain authoritative."

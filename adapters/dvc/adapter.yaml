@@ -1,0 +1,31 @@
+adapter_id: dvc
+tool_id: dvc
+status: optional
+supported_packs:
+  - core_research_os
+  - concrete_ml
+  - industrial_factor_mining
+activation_conditions:
+  - data versions >= 3 or large artifacts require checkout
+inputs:
+  - artifact paths
+  - pipeline stages
+outputs:
+  - DVC metadata
+  - artifact pointers
+read_permissions:
+  - declared artifact paths
+write_permissions:
+  - DVC metadata only
+network_requirements:
+  - optional remote storage
+credential_requirements:
+  - remote-specific credentials when used
+installation_steps:
+  - Install DVC only after versioning triggers are met.
+fallbacks:
+  - human_readable_manifests
+overlap_warnings:
+  - Git plus readable manifests are the default.
+security_notes:
+  - Do not commit remote credentials.
