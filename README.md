@@ -69,16 +69,51 @@ make lint        # lint and format check
 make format      # auto-format
 make demo        # run the sample pipeline
 make audit       # basic data registry audit
+make data-figure # build a local data figure from a figure brief
+make paperviz-input # compile a PaperVizAgent input JSON from a figure brief
 make clean       # remove generated local artifacts
 ```
 
-## Optional extensions
+## Governed extensions
 
-- `extensions/dvc/` — add DVC when datasets or artifacts no longer belong in Git.
-- `extensions/mlflow/` — add MLflow when you compare multiple model runs.
-- `extensions/quarto/` — add Quarto when reports must be regenerated from code.
+- `extensions/dvc/` — use when artifact versioning is needed or artifact checkout would help collaboration.
+- `extensions/engineering-figure-agent/` — default route for data, conceptual, and mixed research figures.
+- `extensions/papervizagent/` — adapter for PaperVizAgent when multi-candidate or critic-refined academic visuals are useful.
+- `extensions/quarto/` — use when reports need one-command regeneration from committed outputs.
 
-Do not enable an extension merely because it is fashionable. Enable it when the project has the corresponding operational need.
+Agents should not add MLflow, Kedro, Kubeflow, Airflow, Prefect, Dagster,
+feature stores, model registries, service dashboards, or long-running
+orchestration unless a concrete need is documented.
+
+## Agent figure workflow
+
+Research and figure generation should follow the root policies:
+
+- `RESEARCH.md`
+- `TOOLCHAIN.md`
+- `FIGURE_GENERATION_CONTRACT.md`
+- `AGENTS.md`
+- `docs/RESEARCH_STACK.md`
+
+For exact data figures, agents should use local plotting or Engineering Figure
+Agent `plot` mode. The runnable template path is:
+
+```bash
+make data-figure
+```
+
+For conceptual or mixed figures, agents should start from a figure brief. If
+PaperVizAgent is useful for multi-candidate academic illustration or critic
+refinement, compile a repository-grounded input first:
+
+```bash
+make paperviz-input FIGURE_BRIEF=reports/paper/figures/briefs/example_concrete_ai_workflow.yaml
+```
+
+The compiled JSON is written under `outputs/figures/papervizagent/` and can be
+copied into PaperVizAgent. Data figures remain data-grounded: exact values,
+axes, units, errors, metrics, and diagnostics come from local data or committed
+outputs.
 
 ## Project status conventions
 

@@ -9,14 +9,14 @@ description = "Reproducible research project"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+  "matplotlib>=3.9",
   "pandas>=2.2",
   "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
 modeling = ["scikit-learn>=1.5"]
-visualization = ["matplotlib>=3.9", "seaborn>=0.13"]
-tracking = ["mlflow>=3.0"]
+visualization = ["seaborn>=0.13"]
 data-versioning = ["dvc>=3.0"]
 reporting = ["jupyterlab>=4.0"]
 

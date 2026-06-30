@@ -1,0 +1,68 @@
+id: FIG-YYYYMMDD-001
+title: "Concrete AI research workflow"
+figure_type: graphical-abstract
+mode: image
+aspect_ratio: "16:9"
+figure_role: conceptual
+paper_claim: "The study links concrete mix design, machine learning prediction, and explainable AI to support material decision-making."
+figure_goal: "Show the evidence chain from source data to model prediction, XAI interpretation, and research decision."
+audience: "materials science and AI research readers"
+caption: "AI-native concrete materials prediction workflow with explainable model interpretation."
+data_requirements:
+  source_paths: []
+  required_columns: []
+  units: {}
+  split_columns: []
+  uncertainty_columns: []
+plot_spec:
+  chart_family: "workflow"
+  x: null
+  y: null
+  color: null
+  facet: null
+  statistical_annotations: []
+  uncertainty_method: null
+  local_plot_panels: []
+panels:
+  - name: "Data and material system"
+    purpose: "Show what material data enters the workflow."
+    content: "Concrete mix composition, curing or test conditions, and measured target properties."
+  - name: "Prediction model"
+    purpose: "Show the modeling step without inventing performance values."
+    content: "Feature engineering, train/validation split, machine learning model, and prediction target."
+  - name: "Explainability"
+    purpose: "Show how model behavior is interpreted."
+    content: "SHAP or feature-importance style explanation linked to material variables."
+  - name: "Decision support"
+    purpose: "Show the research or engineering decision supported by the model."
+    content: "Candidate mix evaluation, uncertainty/caveat note, and next experiment or screening decision."
+must_keep_labels:
+  - "Data source"
+  - "Mix design"
+  - "ML prediction"
+  - "SHAP / XAI"
+  - "Decision support"
+forbidden_content:
+  - "unsupported accuracy values"
+  - "invented material mechanisms"
+  - "fake benchmark numbers"
+  - "company or market claims"
+style_constraints:
+  - "publication style"
+  - "white or very light background"
+  - "short readable labels"
+  - "left-to-right evidence flow"
+  - "no figure title inside image"
+source_paths:
+  - "RESEARCH.md"
+  - "PROJECT_BRIEF.yaml"
+  - "FIGURE_GENERATION_CONTRACT.md"
+verification_checklist:
+  - "All required labels are present."
+  - "No numeric values are invented."
+  - "The visual claim matches PROJECT_BRIEF.yaml."
+  - "Concrete/material terms are scientifically plausible and source-grounded."
+output_record:
+  figure_path: "outputs/figures/<figure-id>.png"
+  supporting_tables: []
+  generation_notes: ""

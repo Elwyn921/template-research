@@ -30,7 +30,6 @@ data/processed/**
 # Generated artifacts
 outputs/**
 !outputs/**/.gitkeep
-mlruns/
 
 # DVC local configuration/cache
 auto_generated/

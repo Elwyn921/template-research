@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Research Figure Brief",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "figure_type",
+    "mode",
+    "paper_claim",
+    "figure_goal",
+    "panels",
+    "must_keep_labels",
+    "forbidden_content",
+    "style_constraints",
+    "verification_checklist"
+  ],
+  "properties": {
+    "id": {"type": "string"},
+    "title": {"type": "string"},
+    "figure_type": {"type": "string"},
+    "mode": {"type": "string", "enum": ["image", "plot", "mixed"]},
+    "aspect_ratio": {"type": "string"},
+    "figure_role": {
+      "type": "string",
+      "enum": ["data", "conceptual", "mixed", "graphical-abstract", "workflow", "diagnostic"]
+    },
+    "paper_claim": {"type": "string"},
+    "figure_goal": {"type": "string"},
+    "audience": {"type": "string"},
+    "caption": {"type": "string"},
+    "data_requirements": {
+      "type": "object",
+      "properties": {
+        "source_paths": {"type": "array", "items": {"type": "string"}},
+        "required_columns": {"type": "array", "items": {"type": "string"}},
+        "units": {"type": "object"},
+        "split_columns": {"type": "array", "items": {"type": "string"}},
+        "uncertainty_columns": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "plot_spec": {
+      "type": "object",
+      "properties": {
+        "chart_family": {"type": "string"},
+        "x": {"type": ["string", "null"]},
+        "y": {"type": ["string", "null"]},
+        "color": {"type": ["string", "null"]},
+        "facet": {"type": ["string", "null"]},
+        "statistical_annotations": {"type": "array", "items": {"type": "string"}},
+        "uncertainty_method": {"type": ["string", "null"]},
+        "local_plot_panels": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "panels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "content"],
+        "properties": {
+          "name": {"type": "string"},
+          "purpose": {"type": "string"},
+          "content": {"type": "string"},
+          "evidence_or_data": {}
+        },
+        "additionalProperties": true
+      }
+    },
+    "must_keep_labels": {"type": "array", "items": {"type": "string"}},
+    "forbidden_content": {"type": "array", "items": {"type": "string"}},
+    "style_constraints": {"type": "array", "items": {"type": "string"}},
+    "source_paths": {"type": "array", "items": {"type": "string"}},
+    "verification_checklist": {"type": "array", "items": {"type": "string"}},
+    "output_record": {
+      "type": "object",
+      "properties": {
+        "figure_path": {"type": "string"},
+        "supporting_tables": {"type": "array", "items": {"type": "string"}},
+        "generation_notes": {"type": "string"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
