@@ -16,8 +16,10 @@ Agents should resolve decisions in this order:
 2. `RESEARCH.md`
 3. `PROJECT_BRIEF.yaml`
 4. `FIGURE_GENERATION_CONTRACT.md`
-5. `docs/RESEARCH_STACK.md`
-6. Active configs, registries, experiment records, and figure briefs.
+5. `TOOL_MODULES.md`
+6. `docs/RESEARCH_STACK.md`
+7. `tool_catalog.yaml` and `configs/modules.yaml`
+8. Active configs, registries, experiment records, and figure briefs.
 
 If these sources conflict, agents should preserve research integrity first:
 do not invent data, citations, mechanisms, financial facts, model metrics, or
@@ -29,7 +31,7 @@ For every research task, agents should run this loop before asking for help:
 
 1. Classify the task: literature, source registry, data audit, modeling,
    explainability, data figure, conceptual figure, mixed figure, report writing,
-   artifact versioning, or environment setup.
+   artifact versioning, tool module, or environment setup.
 2. Load the minimum context needed from the root policies, project brief,
    registries, configs, experiments, and active figure brief.
 3. Choose the lightest workflow that can produce a traceable output.
@@ -63,7 +65,7 @@ but keep outputs separated and avoid silently changing the research direction.
 Start light and add tools only when the workflow needs them.
 
 1. Base repository environment:
-   - `uv sync --all-extras --group dev`
+   - `uv sync --group dev`
    - `uv run pytest`
    - `uv run ruff check .`
 2. Local literature layer:
@@ -87,6 +89,10 @@ Start light and add tools only when the workflow needs them.
    - add later when reports need one-command regeneration from committed
      outputs.
 
+For module selection, use `tool_catalog.yaml` and `configs/modules.yaml`.
+Install optional dependency groups with `make setup EXTRAS="..."` only after the
+selected profile or task justifies them.
+
 This stack intentionally avoids Kedro, MLflow, Kubeflow, Airflow, Prefect,
 Dagster, feature stores, model registries, dashboards, and long-running
 orchestration unless a concrete need is documented.
@@ -100,6 +106,7 @@ template-research/
 ├── PROJECT_BRIEF.yaml                # research scope and claims
 ├── RESEARCH.md                       # root research context
 ├── TOOLCHAIN.md                      # root tool routing policy
+├── TOOL_MODULES.md                   # root tool-module activation contract
 ├── configs/                          # parameters that affect results
 ├── data/                             # raw, interim, processed, sample data
 ├── docs/                             # workflow, decisions, reproducibility
@@ -115,7 +122,8 @@ template-research/
 ├── reports/                          # memos, manuscript sources, slides
 ├── scripts/                          # repository utilities
 ├── src/                              # reusable research code
-└── tests/                            # checks for reusable code
+├── tests/                            # checks for reusable code
+└── tool_catalog.yaml                 # opt-in modules, profiles, and upstream links
 ```
 
 Agents should keep this architecture stable. Add subfolders when they clarify
@@ -142,6 +150,7 @@ research outputs; avoid broad restructuring for a single task.
 | PaperVizAgent figures | compiled adapter input | `outputs/figures/papervizagent/.../input.json` |
 | Reproducible reports | Markdown first, Quarto later | `reports/` |
 | Large artifacts | Git first, DVC when needed | manifest plus optional `*.dvc` |
+| Tool module selection | Catalog plus profile | `tool_catalog.yaml`, `configs/modules.yaml` |
 
 ## Literature Workflow
 

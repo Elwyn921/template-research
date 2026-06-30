@@ -6,6 +6,14 @@ figures.
 
 Use it as a workflow choice, not as a blanket requirement.
 
+Upstream entry:
+
+- Repository: https://github.com/heyu-233/engineering-figure-agent
+- Codex skill entry: upstream `SKILL.md`
+- Upstream schemas: `schemas/figure-brief.schema.json` and
+  `schemas/plot-request.schema.json`
+- Upstream examples: `examples/figure-briefs/`
+
 ## Agent Routing
 
 - If the figure needs exact values, axes, units, error bars, benchmark geometry,
@@ -19,6 +27,15 @@ Use it as a workflow choice, not as a blanket requirement.
 - If the task needs multiple academic candidates, reference-driven style, or
   critic refinement, hand off to the PaperVizAgent adapter after the brief is
   complete.
+
+The upstream skill's mode boundary is binding in this repository too:
+
+- `image` mode is for conceptual engineering or scientific figures.
+- `plot` mode is for exact publication-style charts from numeric data.
+- `mixed` mode renders exact quantitative panels locally before any conceptual
+  composition.
+- Image generation must never supply exact values, axes, benchmark geometry,
+  residuals, SHAP values, or model metrics.
 
 ## Data Figure Path
 
@@ -42,9 +59,15 @@ Keep the upstream tool outside this repository or install it as a user-level
 Codex skill. Do not vendor API keys, provider configs, or private relay details
 into this template.
 
-Reference repository:
+Reference checkout:
 
-- https://github.com/heyu-233/engineering-figure-agent
+```bash
+git clone https://github.com/heyu-233/engineering-figure-agent ../engineering-figure-agent
+```
+
+When the upstream skill is installed in Codex, call it through its `SKILL.md`
+workflow and bring only figure briefs, plot requests, generated figures, and
+verification records back into this repository.
 
 ## Output Locations
 

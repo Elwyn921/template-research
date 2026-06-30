@@ -1,0 +1,15 @@
+active_profile: base_research
+enabled_modules:
+  figure_generation: true
+  data_and_database: true
+  project_ops: true
+  file_ingestion: false
+  literature_and_citations: false
+  web_industry_research: false
+  modeling_and_experiments: false
+  artifact_versioning: false
+  writing_and_publication: false
+installed_extras: []
+notes:
+  - "Enable modules only when the active research question needs them."
+  - "Use make setup EXTRAS=\"data-experiment\" to install optional dependency groups."

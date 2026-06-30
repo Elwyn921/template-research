@@ -14,14 +14,24 @@ records, experiment records, reportable figures, or reports:
 - `PROJECT_BRIEF.yaml`
 - `FIGURE_GENERATION_CONTRACT.md`
 - `AGENTS.md`
+- `TOOL_MODULES.md`
 - `docs/RESEARCH_STACK.md`
+- `tool_catalog.yaml`
+- `configs/modules.yaml`
+
+Before enabling optional research tools or changing module interfaces, also load:
+
+- `TOOL_MODULES.md`
+- the relevant module and built-in profile in `tool_catalog.yaml`
+- the relevant extension README under `extensions/`, if one exists
 
 ## Autonomous Execution Loop
 
 Agents should run this loop without asking the owner unless a blocker appears:
 
 1. Classify the task as literature, data audit, modeling, data figure,
-   conceptual figure, report writing, artifact versioning, or environment work.
+   conceptual figure, report writing, artifact versioning, tool module, or
+   environment work.
 2. Read the smallest necessary context from the root policies, registries,
    configs, experiment records, and active figure brief.
 3. Choose the lightest tool path that can produce a traceable output.
@@ -39,6 +49,20 @@ Ask for owner input only when:
   supported by the available evidence.
 
 ## Tool Routing If/Else
+
+### Tool Modules
+
+- If the task asks what tools to use, inspect `tool_catalog.yaml` before adding
+  dependencies.
+- Treat `TOOL_MODULES.md`, `tool_catalog.yaml`, and `configs/modules.yaml` as
+  the active module interface; `docs/` files are explanatory support.
+- If the task enables a module, update `configs/modules.yaml`; read upstream
+  GitHub docs from `tool_catalog.yaml` before adding local setup.
+- If a module requires a heavy dependency, external app, paid API, MCP server,
+  or private account, document the reason in `docs/DECISIONS.md` before
+  adopting it.
+- If the task only needs a capability temporarily, prefer a documented candidate
+  tool path over installing a permanent dependency.
 
 ### Literature
 

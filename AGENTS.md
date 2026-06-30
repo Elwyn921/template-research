@@ -8,8 +8,8 @@ traceability while still doing useful work autonomously.
 For each task, agents should:
 
 1. Classify the task: literature, data audit, modeling, data figure, conceptual
-   figure, mixed figure, report writing, artifact versioning, or environment
-   work.
+   figure, mixed figure, report writing, artifact versioning, tool module, or
+   environment work.
 2. Read the smallest necessary context from the files below.
 3. Choose the lightest workflow that can produce a traceable result.
 4. Create or update the artifact in the expected repository location.
@@ -29,9 +29,18 @@ reportable figures, read the relevant subset of:
 - `README.md`
 - `RESEARCH.md`
 - `TOOLCHAIN.md`
+- `TOOL_MODULES.md`
 - `PROJECT_BRIEF.yaml`
 - `docs/REPRODUCIBILITY.md`
 - `docs/RESEARCH_STACK.md`
+- `tool_catalog.yaml`
+- `configs/modules.yaml`
+
+Before enabling or changing a tool module, also read:
+
+- `TOOL_MODULES.md`
+- the relevant module and built-in profile in `tool_catalog.yaml`
+- the relevant extension README under `extensions/`, if one exists
 
 Before generating or revising figures, also read:
 
@@ -52,6 +61,8 @@ Before generating or revising figures, also read:
 - If artifacts outgrow Git, use DVC for those artifacts and keep the manifests
   readable.
 - If reports need one-command regeneration, add Quarto as a reporting layer.
+- If a task needs optional tools, select the smallest module/profile from
+  `tool_catalog.yaml`, then record enabled modules in `configs/modules.yaml`.
 
 ## Data Figure Workflow
 

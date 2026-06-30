@@ -5,6 +5,18 @@ It covers data figures, conceptual figures, mixed figures, Engineering Figure
 Agent, PaperVizAgent, and local plotting. It is a workflow for agents, not a
 restriction on the repository owner's manual exploration.
 
+## External Tool Entry
+
+Engineering Figure Agent is the governed external figure tool:
+
+- upstream repository: `https://github.com/heyu-233/engineering-figure-agent`
+- Codex entry: upstream `SKILL.md`
+- local extension contract: `extensions/engineering-figure-agent/README.md`
+
+Use the upstream skill as an execution helper, but keep this repository's
+contracts authoritative for source grounding, output locations, reportable
+claims, and generated artifact records.
+
 ## Context Chain
 
 Before producing a reportable figure, read the relevant subset of:

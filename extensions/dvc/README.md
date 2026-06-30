@@ -6,7 +6,7 @@ DVC before those conditions appear, it should record the concrete reason in
 `docs/DECISIONS.md`.
 
 ```bash
-uv sync --extra data-versioning
+make setup EXTRAS="data-versioning"
 uv run dvc init
 uv run dvc add data/raw/<dataset>
 git add .dvc .gitignore

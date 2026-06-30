@@ -15,9 +15,21 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+file-ingestion = ["openpyxl>=3.1"]
+literature = ["bibtexparser>=1.4"]
+web-industry = ["beautifulsoup4>=4.12", "feedparser>=6.0", "lxml>=5.0", "requests>=2.32"]
+data-experiment = [
+  "scikit-learn>=1.5",
+  "seaborn>=0.13",
+  "shap>=0.46",
+  "statsmodels>=0.14",
+]
+data-versioning = ["dvc>=3.0"]
+publication-output = ["jupyterlab>=4.0", "nbformat>=5.10"]
+
+# Compatibility aliases for early template users.
 modeling = ["scikit-learn>=1.5"]
 visualization = ["seaborn>=0.13"]
-data-versioning = ["dvc>=3.0"]
 reporting = ["jupyterlab>=4.0"]
 
 [dependency-groups]

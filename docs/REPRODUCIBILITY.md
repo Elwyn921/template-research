@@ -15,9 +15,10 @@ A reportable result must identify:
 A clean clone should be able to reproduce all non-sensitive outputs using:
 
 ```bash
-uv sync --all-extras --group dev
+uv sync --group dev
 make test
 make demo
+make tools-audit
 ```
 
 When data cannot be shared, provide a small sample dataset, a schema, source metadata, and exact acquisition instructions.

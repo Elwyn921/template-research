@@ -112,7 +112,8 @@ def apply_axes_style(axis: Any) -> None:
 
 def split_groups(frame: pd.DataFrame, color_column: str | None) -> list[tuple[str, pd.DataFrame]]:
     if color_column and color_column in frame.columns:
-        return [(str(name), group) for name, group in frame.groupby(color_column, dropna=False)]
+        ordered_names = list(dict.fromkeys(frame[color_column].astype(str)))
+        return [(name, frame[frame[color_column].astype(str) == name]) for name in ordered_names]
     return [("all", frame)]
 
 
@@ -125,9 +126,25 @@ def annotate_metrics(axis: Any, metrics_frame: pd.DataFrame | None) -> None:
     value_col = lower_columns.get("value")
     split_col = lower_columns.get("split")
     if metric_col and value_col:
-        for _, row in metrics_frame.head(8).iterrows():
-            prefix = f"{row[split_col]} " if split_col else ""
-            text_lines.append(f"{prefix}{row[metric_col]}={row[value_col]:.3g}")
+        if split_col:
+            metric_names = ["n", "R2", "RMSE", "MAE"]
+            for split, split_frame in metrics_frame.groupby(split_col, sort=False):
+                values = {
+                    str(row[metric_col]): float(row[value_col])
+                    for _, row in split_frame.iterrows()
+                    if pd.notna(row[value_col])
+                }
+                parts = []
+                for name in metric_names:
+                    if name in values:
+                        value = values[name]
+                        formatted = f"{value:.0f}" if name == "n" else f"{value:.3g}"
+                        parts.append(f"{name}={formatted}")
+                if parts:
+                    text_lines.append(f"{split}: " + ", ".join(parts))
+        else:
+            for _, row in metrics_frame.head(8).iterrows():
+                text_lines.append(f"{row[metric_col]}={row[value_col]:.3g}")
     elif len(metrics_frame.columns) <= 6:
         text_lines.append(metrics_frame.head(4).to_string(index=False))
     if text_lines:
@@ -139,8 +156,26 @@ def annotate_metrics(axis: Any, metrics_frame: pd.DataFrame | None) -> None:
             va="top",
             ha="left",
             fontsize=8,
-            bbox={"facecolor": "white", "edgecolor": "#c9d1dc", "alpha": 0.88},
+            bbox={
+                "boxstyle": "round,pad=0.35",
+                "facecolor": "white",
+                "edgecolor": "#c9d1dc",
+                "alpha": 0.92,
+            },
         )
+
+
+def add_panel_label(axis: Any, label: str) -> None:
+    axis.text(
+        -0.12,
+        1.08,
+        label,
+        transform=axis.transAxes,
+        ha="left",
+        va="top",
+        fontsize=11,
+        fontweight="bold",
+    )
 
 
 def find_metrics_table(paths: list[Path]) -> pd.DataFrame | None:
@@ -168,6 +203,24 @@ def plot_prediction_diagnostics(
     data_requirements = brief.get("data_requirements") or {}
     units = data_requirements.get("units") or {}
     plot_spec = brief.get("plot_spec") or {}
+    axis_labels = plot_spec.get("axis_labels") or {}
+
+    def label_for(column: str) -> str:
+        label = axis_labels.get(column)
+        return str(label) if label else column_label(column, units)
+
+    paper_style = bool(plot_spec.get("paper_style"))
+    if paper_style:
+        plt.rcParams.update(
+            {
+                "font.size": 9,
+                "axes.titlesize": 10,
+                "axes.labelsize": 9,
+                "legend.fontsize": 8,
+                "xtick.labelsize": 8,
+                "ytick.labelsize": 8,
+            }
+        )
     x_col = str(plot_spec.get("x") or "y_true")
     y_col = str(plot_spec.get("y") or "y_pred")
     color_col = plot_spec.get("color")
@@ -180,52 +233,103 @@ def plot_prediction_diagnostics(
 
     shap_frame = find_shap_table(source_paths)
     metrics_frame = find_metrics_table(source_paths)
-    panel_count = 4 if shap_frame is not None and not shap_frame.empty else 3
-    fig, axes = plt.subplots(
-        1, panel_count, figsize=(5.2 * panel_count, 4.6), constrained_layout=True
-    )
-    if panel_count == 1:
-        axes = [axes]
+    has_shap = shap_frame is not None and not shap_frame.empty
+    if has_shap:
+        fig, axis_grid = plt.subplots(2, 2, figsize=(10.8, 7.6), constrained_layout=True)
+        axes = axis_grid.ravel().tolist()
+    else:
+        fig, axis_grid = plt.subplots(1, 3, figsize=(12.4, 3.8), constrained_layout=True)
+        axes = axis_grid.ravel().tolist()
 
     groups = split_groups(frame, str(color_col) if color_col else None)
+    palette = ["#4C78A8", "#F58518", "#54A24B", "#B279A2", "#E45756", "#72B7B2"]
+    colors = {label: palette[index % len(palette)] for index, (label, _) in enumerate(groups)}
     for label, group in groups:
-        axes[0].scatter(group[x_col], group[y_col], s=36, alpha=0.78, label=label)
+        display_label = f"{label} (n={len(group)})" if color_col else f"n={len(group)}"
+        if {"y_pred_lower", "y_pred_upper"}.issubset(group.columns):
+            lower = group[y_col] - group["y_pred_lower"]
+            upper = group["y_pred_upper"] - group[y_col]
+            axes[0].errorbar(
+                group[x_col],
+                group[y_col],
+                yerr=[lower, upper],
+                fmt="o",
+                ms=4.8,
+                color=colors[label],
+                alpha=0.86,
+                elinewidth=0.8,
+                capsize=2.4,
+                label=display_label,
+            )
+        else:
+            axes[0].scatter(
+                group[x_col],
+                group[y_col],
+                s=30,
+                alpha=0.84,
+                color=colors[label],
+                label=display_label,
+            )
     low = min(frame[x_col].min(), frame[y_col].min())
     high = max(frame[x_col].max(), frame[y_col].max())
+    pad = max((high - low) * 0.05, 1.0)
+    low -= pad
+    high += pad
     axes[0].plot([low, high], [low, high], color="#2f3542", linewidth=1.1, linestyle="--")
-    axes[0].set_xlabel(column_label(x_col, units))
-    axes[0].set_ylabel(column_label(y_col, units))
+    axes[0].set_xlim(low, high)
+    axes[0].set_ylim(low, high)
+    axes[0].set_aspect("equal", adjustable="box")
+    axes[0].set_xlabel(label_for(x_col))
+    axes[0].set_ylabel(label_for(y_col))
     axes[0].set_title("Prediction parity")
     if len(groups) > 1:
-        axes[0].legend(title=str(color_col), frameon=False, fontsize=8)
+        axes[0].legend(title=str(color_col), frameon=False, loc="lower right")
     annotate_metrics(axes[0], metrics_frame)
 
     for label, group in groups:
-        axes[1].scatter(group[y_col], group[residual_col], s=32, alpha=0.76, label=label)
+        axes[1].scatter(
+            group[y_col],
+            group[residual_col],
+            s=28,
+            alpha=0.82,
+            color=colors[label],
+            label=label,
+        )
     axes[1].axhline(0, color="#2f3542", linewidth=1.0, linestyle="--")
-    axes[1].set_xlabel(column_label(y_col, units))
-    axes[1].set_ylabel(column_label(residual_col, units))
+    axes[1].set_xlabel(label_for(y_col))
+    axes[1].set_ylabel(label_for(residual_col))
     axes[1].set_title("Residuals")
 
-    axes[2].hist(frame[residual_col].dropna(), bins="auto", color="#4c78a8", alpha=0.84)
+    bins = max(6, min(12, int(len(frame) ** 0.5) + 2))
+    axes[2].hist(
+        frame[residual_col].dropna(),
+        bins=bins,
+        color="#4C78A8",
+        alpha=0.82,
+        edgecolor="white",
+        linewidth=0.8,
+    )
     axes[2].axvline(0, color="#2f3542", linewidth=1.0, linestyle="--")
-    axes[2].set_xlabel(column_label(residual_col, units))
+    axes[2].set_xlabel(label_for(residual_col))
     axes[2].set_ylabel("Count")
     axes[2].set_title("Residual distribution")
 
-    if panel_count == 4 and shap_frame is not None:
+    if has_shap and shap_frame is not None:
         numeric = shap_frame.select_dtypes("number")
         if numeric.empty:
             axes[3].text(0.5, 0.5, "No numeric SHAP values", ha="center", va="center")
         else:
             top = numeric.abs().mean().sort_values(ascending=True).tail(12)
-            axes[3].barh(top.index, top.values, color="#59a14f", alpha=0.86)
+            feature_labels = [str(index).replace("_", " ") for index in top.index]
+            axes[3].barh(feature_labels, top.values, color="#54A24B", alpha=0.9)
             axes[3].set_xlabel("Mean absolute SHAP value")
         axes[3].set_title("SHAP / XAI")
 
-    for axis in axes:
+    for label, axis in zip(["a", "b", "c", "d"], axes, strict=False):
         apply_axes_style(axis)
-    fig.suptitle(str(brief.get("caption") or brief.get("title") or "Data figure"), fontsize=12)
+        add_panel_label(axis, label)
+    if plot_spec.get("title_in_figure", True):
+        fig.suptitle(str(brief.get("caption") or brief.get("title") or "Data figure"), fontsize=12)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=220, bbox_inches="tight")
     plt.close(fig)

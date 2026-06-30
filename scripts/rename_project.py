@@ -11,7 +11,9 @@ PLACEHOLDER = "research_project"
 
 def validate_slug(value: str) -> str:
     if not re.fullmatch(r"[a-z][a-z0-9_]*", value):
-        raise ValueError("Slug must start with a lowercase letter and contain only lowercase letters, digits, and underscores.")
+        raise ValueError(
+            "Slug must start with a lowercase letter and contain only lowercase letters, digits, and underscores."
+        )
     return value
 
 

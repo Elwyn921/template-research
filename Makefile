@@ -1,10 +1,13 @@
-.PHONY: setup test lint format demo audit data-figure paperviz-input clean
+.PHONY: setup test lint format demo audit tools-audit tools-list tools-profile data-figure paperviz-input clean
 
 FIGURE_BRIEF ?= reports/paper/figures/briefs/example_concrete_ai_workflow.yaml
 DATA_FIGURE_BRIEF ?= reports/paper/figures/briefs/example_sample_data_figure.yaml
+EXTRAS ?=
+PROFILE ?= base_research
+UV_EXTRA_FLAGS := $(foreach extra,$(EXTRAS),--extra $(extra))
 
 setup:
-	uv sync --all-extras --group dev
+	uv sync --group dev $(UV_EXTRA_FLAGS)
 
 test:
 	uv run pytest
@@ -22,6 +25,15 @@ demo:
 
 audit:
 	uv run python scripts/audit_registry.py
+
+tools-audit:
+	uv run python scripts/audit_tool_modules.py
+
+tools-list:
+	uv run python scripts/audit_tool_modules.py --list
+
+tools-profile:
+	uv run python scripts/audit_tool_modules.py --profile $(PROFILE)
 
 data-figure:
 	uv run python scripts/build_data_figure.py $(DATA_FIGURE_BRIEF)

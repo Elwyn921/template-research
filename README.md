@@ -33,13 +33,20 @@ cd <your-repository>
 # 2) Rename the placeholder package once.
 python scripts/rename_project.py my_project_slug "My Research Project"
 
-# 3) Install the locked environment.
-uv sync --all-extras --group dev
+# 3) Install the base environment.
+uv sync --group dev
 
 # 4) Verify the template works.
 uv run pytest
 uv run ruff check .
 uv run python -m my_project_slug.pipelines.run_demo
+```
+
+Optional research modules are installed explicitly. For example:
+
+```bash
+make setup EXTRAS="data-experiment publication-output"
+make tools-profile PROFILE=concrete_ml
 ```
 
 `uv.lock` is intentionally not committed in this template because the generated project name and optional dependency profile can differ. After adding packages, create and commit it:
@@ -69,10 +76,28 @@ make lint        # lint and format check
 make format      # auto-format
 make demo        # run the sample pipeline
 make audit       # basic data registry audit
+make tools-audit # validate tool catalog and profiles
+make tools-list  # list opt-in research tool modules
+make tools-profile PROFILE=concrete_ml # print a module activation plan
 make data-figure # build a local data figure from a figure brief
 make paperviz-input # compile a PaperVizAgent input JSON from a figure brief
 make clean       # remove generated local artifacts
 ```
+
+## Research tool library
+
+The template also acts as a lightweight research tool library. The catalog does
+not install external services by default; it lets agents and project owners
+choose modules as a project becomes concrete.
+
+- `tool_catalog.yaml` — machine-readable module catalog.
+- `TOOL_MODULES.md` — root agent-facing contract for module activation.
+- `configs/modules.yaml` — current project profile and enabled module state.
+- upstream GitHub links in `tool_catalog.yaml` — first place to read before
+  enabling optional tools.
+
+Start from `base_research`, then enable only the modules required by the active
+question, dataset, model, figure, or publication target.
 
 ## Governed extensions
 
