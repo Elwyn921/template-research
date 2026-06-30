@@ -2,8 +2,8 @@
 
 This file defines how agents should produce research figures in this repository.
 It covers data figures, conceptual figures, mixed figures, Engineering Figure
-Agent, PaperVizAgent, and local plotting. It is a workflow for agents, not a
-restriction on the repository owner's manual exploration.
+Agent, PaperVizAgent, and data-grounded rendering. It is a workflow for agents,
+not a restriction on the repository owner's manual exploration.
 
 ## External Tool Entry
 
@@ -16,6 +16,29 @@ Engineering Figure Agent is the governed external figure tool:
 Use the upstream skill as an execution helper, but keep this repository's
 contracts authoritative for source grounding, output locations, reportable
 claims, and generated artifact records.
+
+## Non-Negotiable Figure Gates
+
+These rules are hard constraints for agents:
+
+1. Exact quantitative content must come from source data, committed outputs, or
+   registered experiment records.
+2. Image generation and PaperVizAgent must not create exact values, axes, units,
+   benchmark geometry, error bars, model metrics, residuals, SHAP values, factor
+   returns, or statistical diagnostics.
+3. `mode: image` is only for conceptual figures. If a brief includes
+   `data_requirements`, `plot_spec`, exact numeric panels, metrics, axes, or
+   supporting tables, the brief must use `mode: plot` or `mode: mixed`.
+4. `mode: plot` must not be compiled into PaperVizAgent input. Use a
+   data-grounded renderer instead.
+5. `mode: mixed` must render exact data panels before conceptual composition.
+6. Loose AI-generated images are drafts until verified against this contract,
+   `AGENTS.md`, `TOOL_MODULES.md`, `RESEARCH.md`, and the active brief.
+7. After changing figure briefs or figure policy, run:
+
+   ```bash
+   make figures-audit
+   ```
 
 ## Context Chain
 
@@ -56,8 +79,11 @@ would imply different scientific or investment conclusions.
 
 - If the figure contains exact values, axes, units, error bars, model metrics,
   benchmark geometry, SHAP values, residuals, time series, factor returns, or
-  statistical diagnostics, create a data figure with local plotting or
-  Engineering Figure Agent `plot` mode.
+  statistical diagnostics, create a data-grounded figure from source data,
+  committed outputs, or registered experiment records. Acceptable renderers
+  include the local builder, Engineering Figure Agent `plot` mode,
+  Vega/Altair-style declarative specs, Plotly/Observable-style interactive
+  output, Quarto-rendered figures, or another audited renderer.
 - Else if the figure communicates a workflow, architecture, mechanism
   hypothesis, research pipeline, or graphical abstract, create a conceptual
   figure from a figure brief with Engineering Figure Agent `image` mode.
@@ -94,7 +120,8 @@ For data figures, agents should choose the plot from the claim and data shape:
 
 Data figure requirements for agents:
 
-- Use source data or committed outputs for all numeric marks.
+- Use source data, committed outputs, or registered experiment records for all
+  numeric marks.
 - Show units and transformations when they affect interpretation.
 - Keep train/validation/test or time split information visible when metrics are
   shown.
@@ -104,6 +131,23 @@ Data figure requirements for agents:
   limitations.
 - Save the plotting code, config, output image, and supporting table or summary
   where another agent can reproduce the result.
+
+## Data-Grounded Rendering Backends
+
+The constraint is not "local matplotlib only." The constraint is that exact
+marks must be generated from traceable evidence. Agents may use any renderer
+that preserves this chain:
+
+1. source data, committed output, or experiment record;
+2. chart specification or rendering code;
+3. generated figure or interactive artifact;
+4. sidecar, report note, or experiment record documenting the path.
+
+Good backends include this repository's builder, Engineering Figure Agent
+`plot` mode, Altair/Vega-Lite specifications, Plotly HTML, Observable Plot,
+Quarto-rendered reports, or custom scripts. Image generation can help with
+conceptual panels, composition, or visual style, but it must not create exact
+quantitative marks.
 
 ## Conceptual Figure Workflow
 
@@ -119,7 +163,7 @@ For conceptual figures, agents should:
 
 For mixed figures, agents should:
 
-- render exact data panels locally first;
+- render exact data panels with a data-grounded renderer first;
 - keep the data panels unchanged during composition except for layout-safe
   resizing;
 - make conceptual panels explain the evidence chain rather than replace the
@@ -161,7 +205,8 @@ Before a figure can be used in a report or paper, confirm:
 - the figure claim matches `PROJECT_BRIEF.yaml`;
 - all required labels are present and correctly spelled;
 - no unsupported numbers or mechanisms were introduced;
-- exact plots were generated from local data or committed outputs;
+- exact plots were generated from source data, committed outputs, or registered
+  experiment records;
 - axes, units, transformations, and split definitions are clear for data figures;
 - uncertainty, sample size, and caveats are visible when they affect the claim;
 - visual style does not obscure uncertainty or limitations;

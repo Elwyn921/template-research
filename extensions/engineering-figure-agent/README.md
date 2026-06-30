@@ -17,13 +17,14 @@ Upstream entry:
 ## Agent Routing
 
 - If the figure needs exact values, axes, units, error bars, benchmark geometry,
-  SHAP values, residuals, or statistical diagnostics, use `plot` mode or local
-  plotting from a figure brief.
+  SHAP values, residuals, or statistical diagnostics, use a data-grounded
+  renderer: Engineering Figure Agent `plot` mode, the local builder, or another
+  audited chart backend from a figure brief.
 - If the figure is a workflow, architecture diagram, schematic, or graphical
   abstract, use `image` mode from a figure brief.
 - If the figure combines exact data panels and conceptual panels, use `mixed`
-  mode: render exact data panels locally first, then compose or describe the
-  conceptual panels.
+  mode: render exact data panels with a data-grounded renderer first, then
+  compose or describe the conceptual panels.
 - If the task needs multiple academic candidates, reference-driven style, or
   critic refinement, hand off to the PaperVizAgent adapter after the brief is
   complete.
@@ -31,9 +32,10 @@ Upstream entry:
 The upstream skill's mode boundary is binding in this repository too:
 
 - `image` mode is for conceptual engineering or scientific figures.
-- `plot` mode is for exact publication-style charts from numeric data.
-- `mixed` mode renders exact quantitative panels locally before any conceptual
-  composition.
+- `plot` mode is one approved route for exact publication-style charts from
+  numeric data; it is not the only possible renderer.
+- `mixed` mode renders exact quantitative panels with a data-grounded renderer
+  before any conceptual composition.
 - Image generation must never supply exact values, axes, benchmark geometry,
   residuals, SHAP values, or model metrics.
 
@@ -47,7 +49,8 @@ uv run python scripts/build_data_figure.py reports/paper/figures/briefs/<brief>.
 
 The builder is intentionally conservative:
 
-- it reads only local data or committed outputs named in the brief;
+- it reads only source data, committed outputs, or registered experiment records
+  named in the brief;
 - it fails on placeholder paths or missing columns;
 - it writes a sidecar JSON record next to the figure;
 - it does not invent metrics, uncertainty intervals, SHAP values, or scientific

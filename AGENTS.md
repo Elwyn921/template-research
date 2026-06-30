@@ -47,6 +47,29 @@ Before generating or revising figures, also read:
 - `FIGURE_GENERATION_CONTRACT.md`
 - the active figure brief under `reports/paper/figures/briefs/`, if one exists
 
+## Figure Hard Gates
+
+These gates are mandatory for agents. If a figure violates one of them, keep it
+as a draft and do not reference it as reportable evidence.
+
+- If a figure contains exact values, axes, units, error bars, benchmark
+  geometry, model metrics, residuals, SHAP values, factor returns, or
+  statistical diagnostics, use a data-grounded renderer. The renderer may be
+  local code, Engineering Figure Agent `plot` mode, Altair/Vega-Lite, Plotly,
+  Observable Plot, Quarto, or another audited renderer.
+- Image generation and PaperVizAgent must not create exact quantitative marks.
+  They may only help with conceptual panels, composition, style exploration,
+  labels, or chart/code specifications.
+- `mode: image` is only for conceptual figures. A brief with data requirements,
+  plot specifications, metrics, axes, or exact numeric panels must use `plot` or
+  `mixed`.
+- `mode: plot` must not be sent to PaperVizAgent. Use `scripts/build_data_figure.py`
+  or another data-grounded renderer.
+- `mode: mixed` must render exact data panels first, then compose conceptual
+  panels around those generated assets.
+- Run `make figures-audit` after changing figure briefs or figure generation
+  policy.
+
 ## Tool Routing
 
 - If the task is literature retrieval, use Zotero/ZotSeek when local library
@@ -91,7 +114,8 @@ Agents should treat data figures as first-class research outputs.
    - Factor or investment research: time-series coverage, rolling statistics,
      quantile spreads, turnover, information coefficient, drawdown, source date,
      and robustness notes.
-4. Generate exact numeric marks from data or committed outputs only.
+4. Generate exact numeric marks from source data, committed outputs, or
+   registered experiment records only.
 5. Save figures under `outputs/figures/` and supporting tables under
    `outputs/tables/`.
 6. Verify axes, units, transformations, split labels, uncertainty, caveats, and
@@ -102,8 +126,8 @@ Agents should treat data figures as first-class research outputs.
 - If the figure is a workflow, architecture diagram, schematic, or graphical
   abstract, use a figure brief and Engineering Figure Agent `image` mode.
 - If exact data panels and conceptual panels both matter, use `mixed` mode:
-  render data panels locally first, then compose or describe the conceptual
-  panels around them.
+  render data panels with a data-grounded renderer first, then compose or
+  describe the conceptual panels around them.
 - If multi-candidate generation, reference-driven style, or critic refinement is
   useful, compile PaperVizAgent input first:
 
@@ -119,7 +143,8 @@ Agents should treat data figures as first-class research outputs.
 
 - Do not invent data, citations, mechanisms, financial facts, model metrics, or
   experimental results.
-- Do not use image generation as the source of exact numerical plots.
+- Do not use image generation or PaperVizAgent as the source of exact numerical
+  plots.
 - Do not commit private data, restricted PDFs, API keys, or generated provider
   configs.
 - Keep choices that affect results in `configs/`.

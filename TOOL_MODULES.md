@@ -54,17 +54,27 @@ For `figure_generation`, the governed external entry is:
 - local extension contract: `extensions/engineering-figure-agent/README.md`
 - repository figure contract: `FIGURE_GENERATION_CONTRACT.md`
 
-Mode routing is mandatory:
+Grounding and rendering rules are mandatory:
 
 - `image` mode: conceptual figures, system architecture diagrams, algorithm
   workflows, graphical abstracts, schematics, and redraws.
-- `plot` mode: exact bar charts, trend curves, heatmaps, scatter plots,
-  ablation plots, benchmark summaries, axes, units, and error bars.
-- `mixed` mode: render quantitative panels locally first, then use image
-  generation only for conceptual panels.
+- data-grounded rendering: exact bar charts, trend curves, heatmaps, scatter
+  plots, ablation plots, benchmark summaries, axes, units, and error bars.
+  The renderer can be the local builder, Engineering Figure Agent `plot` mode,
+  Vega/Altair, Plotly, Observable Plot, Quarto, or another audited renderer.
+- `mixed` mode: render quantitative panels with a data-grounded renderer first,
+  then use image generation only for conceptual panels.
 
-Never use image generation for exact values, axes, benchmark geometry, model
-metrics, residuals, SHAP values, or other quantitative marks.
+Never use image generation as the source of exact values, axes, benchmark
+geometry, model metrics, residuals, SHAP values, or other quantitative marks.
+AI can help draft chart specifications, code, layout, labels, and styling, but
+the marks must be generated from data, committed outputs, or registered
+experiment records.
+
+Hard gate for agents: `mode: image` cannot contain `data_requirements`,
+`plot_spec`, metrics, axes, or exact numeric panels. `mode: plot` cannot be sent
+to PaperVizAgent. Run `make figures-audit` after changing figure briefs or
+figure policy.
 
 ## Optional Installation
 

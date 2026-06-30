@@ -120,8 +120,10 @@ Research and figure generation should follow the root policies:
 - `AGENTS.md`
 - `docs/RESEARCH_STACK.md`
 
-For exact data figures, agents should use local plotting or Engineering Figure
-Agent `plot` mode. The runnable template path is:
+For exact data figures, agents should use a data-grounded renderer: the local
+builder, Engineering Figure Agent `plot` mode, declarative chart specs, Plotly
+or Observable-style output, Quarto-rendered figures, or another audited path.
+The runnable template path is:
 
 ```bash
 make data-figure
@@ -137,8 +139,9 @@ make paperviz-input FIGURE_BRIEF=reports/paper/figures/briefs/example_concrete_a
 
 The compiled JSON is written under `outputs/figures/papervizagent/` and can be
 copied into PaperVizAgent. Data figures remain data-grounded: exact values,
-axes, units, errors, metrics, and diagnostics come from local data or committed
-outputs.
+axes, units, errors, metrics, and diagnostics come from source data, committed
+outputs, or registered experiment records. `mode: plot` briefs are not valid
+PaperVizAgent inputs.
 
 ## Project status conventions
 

@@ -5,7 +5,7 @@ mode: plot
 aspect_ratio: "16:9"
 figure_role: data
 paper_claim: "The concrete prediction model should be evaluated with split-aware accuracy, residual behavior, and explainable feature effects before being used for decision support."
-figure_goal: "Create a multi-panel data figure for concrete/materials ML diagnostics using local data or committed model outputs only."
+figure_goal: "Create a multi-panel data figure for concrete/materials ML diagnostics using source data, committed model outputs, or registered experiment records only."
 audience: "materials science, civil engineering, and applied AI readers"
 caption: "Prediction diagnostics and explainable AI checks for a concrete materials model."
 data_requirements:
@@ -82,7 +82,7 @@ source_paths:
   - "FIGURE_GENERATION_CONTRACT.md"
   - "docs/RESEARCH_STACK.md"
 verification_checklist:
-  - "All numeric marks come from local data or committed outputs."
+  - "All numeric marks come from source data, committed outputs, or registered experiment records."
   - "Axes include units or clearly state dimensionless metrics."
   - "Train, validation, and test splits are not mixed without disclosure."
   - "Metrics match the supporting table."

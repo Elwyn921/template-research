@@ -89,8 +89,10 @@ Ask for owner input only when:
 ### Professional Data Figures
 
 - If the figure contains exact data, axes, units, error bars, model metrics,
-  residuals, SHAP values, factor returns, or statistical diagnostics, use local
-  plotting or Engineering Figure Agent `plot` mode.
+  residuals, SHAP values, factor returns, or statistical diagnostics, use a
+  data-grounded renderer: local builder, Engineering Figure Agent `plot` mode,
+  declarative chart specs, Plotly/Observable-style output, Quarto-rendered
+  figures, or another audited path.
 - If the task is model prediction quality, default to observed-vs-predicted,
   residual-vs-fitted, residual distribution, split-aware metric annotations, and
   uncertainty where available.
@@ -112,8 +114,8 @@ Ask for owner input only when:
   graphical abstract, use a figure brief and Engineering Figure Agent `image`
   mode.
 - Else if exact evidence panels and conceptual panels both matter, use `mixed`
-  mode: render exact panels locally first, then compose or describe conceptual
-  panels around them.
+  mode: render exact panels with a data-grounded renderer first, then compose or
+  describe conceptual panels around them.
 - Else if multiple academic candidates, reference-driven styling, or critic
   refinement would help, use the PaperVizAgent adapter.
 
@@ -127,6 +129,8 @@ Ask for owner input only when:
 
 - If the starting point is a loose prompt, convert it into a figure brief before
   compiling.
+- Do not compile `mode: plot` briefs into PaperVizAgent input; use a
+  data-grounded renderer.
 - If an image was generated without the adapter, treat it as a draft, verify it
   against the active brief and research policies, and rebuild when the mismatch
   matters.

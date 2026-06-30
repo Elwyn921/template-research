@@ -1,4 +1,4 @@
-.PHONY: setup test lint format demo audit tools-audit tools-list tools-profile data-figure paperviz-input clean
+.PHONY: setup test lint format demo audit tools-audit tools-list tools-profile figures-audit data-figure paperviz-input clean
 
 FIGURE_BRIEF ?= reports/paper/figures/briefs/example_concrete_ai_workflow.yaml
 DATA_FIGURE_BRIEF ?= reports/paper/figures/briefs/example_sample_data_figure.yaml
@@ -25,6 +25,8 @@ demo:
 
 audit:
 	uv run python scripts/audit_registry.py
+	uv run python scripts/audit_tool_modules.py
+	uv run python scripts/audit_figure_contracts.py
 
 tools-audit:
 	uv run python scripts/audit_tool_modules.py
@@ -34,6 +36,9 @@ tools-list:
 
 tools-profile:
 	uv run python scripts/audit_tool_modules.py --profile $(PROFILE)
+
+figures-audit:
+	uv run python scripts/audit_figure_contracts.py
 
 data-figure:
 	uv run python scripts/build_data_figure.py $(DATA_FIGURE_BRIEF)

@@ -144,9 +144,9 @@ research outputs; avoid broad restructuring for a single task.
 | AI industry/investment research | sourced indicators, Zotero/ZotSeek, statsmodels | `metadata/`, `reports/memos/`, `outputs/tables/` |
 | Industrial factor mining | statsmodels/statistical-analysis, leakage checks | `configs/`, `experiments/`, `outputs/` |
 | Experimental design | K-Dense `experimental-design`, `statistical-power` | `docs/PROJECT_SPEC.md`, `reports/memos/` |
-| Data figures | local plotting or Engineering Figure Agent `plot` | `outputs/figures/`, `outputs/tables/` |
+| Data figures | data-grounded renderer | `outputs/figures/`, `outputs/tables/` |
 | Conceptual figures | Engineering Figure Agent `image` | figure brief, output image, verification note |
-| Mixed figures | local data panels plus conceptual composition | data panel paths, brief, final figure |
+| Mixed figures | data-grounded panels plus conceptual composition | data panel paths, brief, final figure |
 | PaperVizAgent figures | compiled adapter input | `outputs/figures/papervizagent/.../input.json` |
 | Reproducible reports | Markdown first, Quarto later | `reports/` |
 | Large artifacts | Git first, DVC when needed | manifest plus optional `*.dvc` |
@@ -202,8 +202,8 @@ images.
 - If the figure supports a causal or investment interpretation, show assumptions,
   time coverage, caveats, and robustness checks instead of relying on a single
   decorative chart.
-- If exact numeric content is needed, generate marks from data or committed
-  outputs only.
+- If exact numeric content is needed, generate marks from source data, committed
+  outputs, or registered experiment records only.
 
 ### Concrete/Materials AI Figures
 
@@ -260,7 +260,8 @@ For reportable data figures, agents should save or record:
 - If Engineering Figure Agent is available, use it as the default tool for
   `plot`, `image`, and `mixed` figure modes.
 - If the output has exact data panels and conceptual panels, render exact data
-  panels first and use `mixed` mode for the composition.
+  panels with a data-grounded renderer first and use `mixed` mode for the
+  composition.
 - If the output benefits from multiple candidates, reference-driven style, or
   critic refinement, use PaperVizAgent through the adapter:
 
@@ -272,8 +273,9 @@ For reportable data figures, agents should save or record:
   using PaperVizAgent.
 - If PaperVizAgent output does not match the brief, keep it as draft and revise
   the brief or generated image before report use.
-- PaperVizAgent and image-generation tools should not create exact numeric data
-  plots from imagination.
+- PaperVizAgent and image-generation tools must not create exact numeric data
+  plots from imagination. `mode: plot` briefs must use a data-grounded renderer,
+  not PaperVizAgent.
 
 ## Tool Risks And Maintenance Costs
 
@@ -295,7 +297,7 @@ The current repository should start with this minimal stack:
 2. Use Zotero manually for library organization; add ZotSeek only when local
    semantic paper retrieval is needed.
 3. Use selected K-Dense skills only for the task at hand.
-4. Use local plotting or Engineering Figure Agent `plot` for data figures.
+4. Use data-grounded rendering for exact data figures.
 5. Use figure briefs for conceptual or mixed figures.
 6. Use `scripts/build_paperviz_input.py` only when PaperVizAgent is useful.
 7. Keep DVC and Quarto as opt-in layers until artifacts or reports require them.

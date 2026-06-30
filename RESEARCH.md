@@ -28,8 +28,9 @@ ideas manually.
 
 - Do not invent material mechanisms, benchmark values, company facts, market data,
   financial metrics, causal relationships, or experimental results.
-- Do not use image generation as the source of exact values, axes, error bars,
-  statistical diagnostics, benchmark geometry, or model metrics.
+- Do not use image generation or PaperVizAgent as the source of exact values,
+  axes, error bars, statistical diagnostics, benchmark geometry, or model
+  metrics.
 - Do not present scratch work as reportable evidence until the source, dataset,
   configuration, code path, and output artifact are recorded.
 - Generated or agent-composed figures remain drafts until checked for scientific
@@ -71,13 +72,14 @@ show these relationships:
 ## Figure Decision Rules
 
 - If exact data, axes, error bars, residuals, SHAP values, benchmark numbers, or
-  statistical diagnostics are needed, create a data figure from local data or
-  committed outputs.
+  statistical diagnostics are needed, create a figure with a data-grounded
+  renderer from source data, committed outputs, or registered experiment
+  records.
 - Else if the figure communicates a workflow, mechanism hypothesis, architecture,
   or graphical abstract, create a conceptual figure from a figure brief.
 - Else if exact evidence and conceptual structure are both needed, render the
-  data panels first and then compose them with conceptual panels as a mixed
-  figure.
+  data panels with a data-grounded renderer first and then compose them with
+  conceptual panels as a mixed figure.
 - Else if multiple academic visual candidates, reference-style refinement, or
   critic feedback would help, use the PaperVizAgent adapter.
 

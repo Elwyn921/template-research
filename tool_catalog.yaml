@@ -24,7 +24,7 @@ modules:
     local_steps:
       - "Read FIGURE_GENERATION_CONTRACT.md."
       - "Create or update a figure brief under reports/paper/figures/briefs/."
-      - "For exact data figures, render locally with make data-figure or Engineering Figure Agent plot mode."
+      - "For exact data figures, use a data-grounded renderer: local builder, Engineering Figure Agent plot mode, declarative chart specs, Plotly or Observable-style output, Quarto-rendered figures, or another audited path."
       - "For conceptual figures, use Engineering Figure Agent image mode from the brief."
       - "Save outputs under outputs/figures/ and keep sidecar or report notes."
     primary_outputs:
@@ -32,7 +32,7 @@ modules:
       - "outputs/tables/"
       - "reports/paper/figures/briefs/"
     verification:
-      - "Numeric marks come from local data or committed outputs."
+      - "Numeric marks come from source data, committed outputs, or registered experiment records."
       - "Axes, units, labels, split definitions, and forbidden content are checked."
       - "Do not use image generation for exact values, benchmark geometry, SHAP, residuals, or metrics."
     tools:
@@ -52,6 +52,15 @@ modules:
         github_url: "https://github.com/google-research/papervizagent"
         read_first:
           - "README.md"
+      - name: "Altair / Vega-Lite"
+        status: candidate
+        github_url: "https://github.com/vega/altair"
+      - name: "Plotly.py"
+        status: candidate
+        github_url: "https://github.com/plotly/plotly.py"
+      - name: "Observable Plot"
+        status: candidate
+        github_url: "https://github.com/observablehq/plot"
 
   file_ingestion:
     title: "File ingestion and document parsing"

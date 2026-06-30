@@ -9,12 +9,14 @@ It is not the default path for exact data figures.
 
 ## Agent Routing
 
-- If the task is an exact data figure, use local plotting or Engineering Figure
-  Agent `plot` mode.
+- If the task is an exact data figure, use a data-grounded renderer such as the
+  local builder, Engineering Figure Agent `plot` mode, Altair/Vega-Lite,
+  Plotly, Observable Plot, Quarto, or another audited path.
 - If the task is a conceptual figure and one candidate is enough, use
   Engineering Figure Agent `image` mode from a figure brief.
 - If the task needs mixed exact data panels and conceptual panels, render data
-  panels locally first and then compose through `mixed` mode.
+  panels with a data-grounded renderer first and then compose through `mixed`
+  mode.
 - If the task needs multiple academic candidates, visual refinement, or
   reference-style exploration, use PaperVizAgent through the adapter.
 
@@ -34,6 +36,9 @@ outputs/figures/papervizagent/<brief-name>/input.json
 
 Use that JSON as the PaperVizAgent demo input or copy it into a PaperVizAgent
 dataset split.
+
+The adapter must not be used for `mode: plot` briefs. The build script refuses
+those inputs so exact data figures stay on the data-grounded path.
 
 If the starting point is a loose prompt, agents should convert it into a figure
 brief first. If an existing PaperVizAgent output was created from a loose prompt,
@@ -73,9 +78,10 @@ The `content` and `visual_intent` fields include:
 
 ## Boundary
 
-PaperVizAgent should not be used as the source of exact values, axes, units,
+PaperVizAgent must not be used as the source of exact values, axes, units,
 model metrics, error bars, residuals, SHAP values, factor returns, or
-statistical diagnostics. Those should come from local data or committed outputs.
+statistical diagnostics. Those must come from source data, committed outputs, or
+registered experiment records.
 
 ## Installing PaperVizAgent Externally
 

@@ -11,7 +11,9 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_ROOT_FILES = [
+    "AGENTS.md",
     "RESEARCH.md",
+    "TOOL_MODULES.md",
     "TOOLCHAIN.md",
     "PROJECT_BRIEF.yaml",
     "FIGURE_GENERATION_CONTRACT.md",
@@ -58,6 +60,18 @@ def as_list(value: Any) -> list[Any]:
     return [value]
 
 
+def has_content(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, dict):
+        return any(has_content(item) for item in value.values())
+    if isinstance(value, list):
+        return any(has_content(item) for item in value)
+    return True
+
+
 def slugify(value: str) -> str:
     slug = re.sub(r"[^a-zA-Z0-9]+", "-", value.strip()).strip("-").lower()
     return slug or "figure"
@@ -84,6 +98,31 @@ def require_brief_fields(brief: dict[str, Any], path: Path) -> None:
         raise SystemExit("Figure brief mode must be one of: image, plot, mixed")
     if not as_list(brief["panels"]):
         raise SystemExit("Figure brief must define at least one panel")
+
+
+def require_paperviz_compatible_mode(brief: dict[str, Any], path: Path) -> None:
+    mode = brief["mode"]
+    if mode == "plot":
+        raise SystemExit(
+            f"PaperVizAgent input is not valid for mode: plot ({path}). "
+            "Use scripts/build_data_figure.py or another data-grounded renderer."
+        )
+
+    figure_type = str(brief.get("figure_type") or "").strip().lower()
+    figure_role = str(brief.get("figure_role") or "").strip().lower()
+    if mode == "image" and (figure_type == "data-figure" or figure_role == "data"):
+        raise SystemExit(
+            f"Image-mode brief is marked as data figure ({path}). Use mode: plot or mode: mixed."
+        )
+
+    data_fields = [
+        field for field in ("data_requirements", "plot_spec") if has_content(brief.get(field))
+    ]
+    if mode == "image" and data_fields:
+        raise SystemExit(
+            f"Image-mode brief contains data-grounded fields {data_fields} ({path}). "
+            "Use mode: plot or mode: mixed."
+        )
 
 
 def format_panels(panels: list[Any]) -> str:
@@ -136,8 +175,10 @@ def bullet_list(items: list[Any]) -> str:
 def build_content(
     brief: dict[str, Any],
     brief_path: Path,
+    agents: str,
     project_brief: str,
     research: str,
+    tool_modules: str,
     toolchain: str,
     figure_contract: str,
     research_stack: str,
@@ -160,8 +201,14 @@ figure or mark the result as a draft for review.
 Source: RESEARCH.md
 {research}
 
+Source: AGENTS.md
+{agents}
+
 Source: PROJECT_BRIEF.yaml
 {project_brief}
+
+Source: TOOL_MODULES.md
+{tool_modules}
 
 Source: TOOLCHAIN.md
 {toolchain}
@@ -212,11 +259,10 @@ AGENT GENERATION GUIDANCE
 - Preserve every required label from the figure brief.
 - Do not include a figure title inside the generated image.
 - Use short, readable labels and clear arrows.
-- If exact quantitative panels are needed, use local data panels supplied by the
-  repository or describe placeholders only.
-- If the brief mode is plot, PaperVizAgent should not be treated as the source
-  of the data plot; use this record as a specification for local plotting or
-  mixed composition.
+- If exact quantitative panels are needed, use pre-rendered data-grounded panels
+  supplied by the repository or describe placeholders only.
+- PaperVizAgent must not create exact quantitative marks, axes, metrics,
+  residuals, SHAP values, or statistical diagnostics.
 - The output should support the paper claim without adding claims beyond the
   brief.
 """
@@ -229,8 +275,8 @@ def build_visual_intent(brief: dict[str, Any]) -> str:
     return (
         f"{brief.get('caption') or brief.get('figure_goal')}\n\n"
         f"Figure role: {figure_role}. "
-        "Agent guidance: follow RESEARCH.md, TOOLCHAIN.md, docs/RESEARCH_STACK.md, "
-        "and FIGURE_GENERATION_CONTRACT.md; "
+        "Agent guidance: follow AGENTS.md, TOOL_MODULES.md, RESEARCH.md, "
+        "TOOLCHAIN.md, docs/RESEARCH_STACK.md, and FIGURE_GENERATION_CONTRACT.md; "
         f"preserve these labels exactly: {labels or 'none specified'}; "
         f"avoid: {forbidden or 'none specified'}; "
         "do not invent numerical results or unsupported scientific/financial claims."
@@ -292,8 +338,11 @@ def main() -> int:
     brief_path = args.brief if args.brief.is_absolute() else ROOT / args.brief
     brief = load_yaml_or_json(brief_path)
     require_brief_fields(brief, brief_path)
+    require_paperviz_compatible_mode(brief, brief_path)
 
+    agents = read_text(ROOT / "AGENTS.md")
     research = read_text(ROOT / "RESEARCH.md")
+    tool_modules = read_text(ROOT / "TOOL_MODULES.md")
     toolchain = read_text(ROOT / "TOOLCHAIN.md")
     project_brief = read_text(ROOT / "PROJECT_BRIEF.yaml")
     figure_contract = read_text(ROOT / "FIGURE_GENERATION_CONTRACT.md")
@@ -301,7 +350,9 @@ def main() -> int:
     research_stack = read_text(research_stack_path) if research_stack_path.exists() else ""
 
     source_files = [
+        "AGENTS.md",
         "RESEARCH.md",
+        "TOOL_MODULES.md",
         "TOOLCHAIN.md",
         "PROJECT_BRIEF.yaml",
         "FIGURE_GENERATION_CONTRACT.md",
@@ -315,8 +366,10 @@ def main() -> int:
     content = build_content(
         brief=brief,
         brief_path=brief_path.relative_to(ROOT),
+        agents=agents,
         project_brief=project_brief,
         research=research,
+        tool_modules=tool_modules,
         toolchain=toolchain,
         figure_contract=figure_contract,
         research_stack=research_stack,
